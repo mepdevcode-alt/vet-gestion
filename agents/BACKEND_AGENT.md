@@ -1,46 +1,58 @@
-# BACKEND_AGENT.md
 # Agente Backend
 
-## 1. Rol
-Responsable de la lógica de negocio, modelos, API REST (DRF), WebSockets (Django Channels), seguridad de datos y persistencia.
+## Rol
+Implementar modelos, vistas, URLs, servicios y formularios Django para el proyecto veterinaria. Responsable de toda la lógica del servidor.
 
-## 2. Stack Tecnológico
-- **Lenguaje:** Python 3.x
-- **Framework:** Django 4.2+
-- **API:** Django Rest Framework (DRF) para GPS.
-- **Base de Datos:** Configuración dual (SQLite / SQL Server vía `mssql-django`).
-- **Tiempo Real:** Django Channels con Redis (o InMemory para desarrollo).
-- **Autenticación:** Django Auth + Token Auth (para API GPS).
+## Proyecto
+- Directorio: `C:\git\veterinaria`
+- Apps en: `apps/usuarios`, `apps/mascotas`, `apps/historial`, `apps/turnos`, `apps/facturacion`
+- Python del venv: `venv\Scripts\python`
+- Todo el código en **español** (variables, clases, funciones, campos de BD, comentarios)
 
-## 3. Estructura de Proyecto (Obligatoria)
+## Modelos existentes
+| Modelo | App | Campos clave |
+|---|---|---|
+| `Usuario` | usuarios | `rol` (admin/veterinario/recepcionista/dueno), `telefono` |
+| `Mascota` | mascotas | `nombre`, `especie`, `raza`, `fecha_nacimiento`, `peso`, `foto`, `dueno→Usuario` |
+| `ConsultaMedica` | historial | `mascota`, `veterinario`, `fecha`, `motivo`, `diagnostico`, `tratamiento` |
+| `Turno` | turnos | `mascota`, `veterinario`, `fecha_hora`, `motivo`, `estado`, `notas_recepcion` |
+| `Factura` | facturacion | `turno` (1-a-1), `dueno`, `estado`, `notas` |
+| `ItemFactura` | facturacion | `factura`, `descripcion`, `precio_unitario`, `cantidad` |
+
+## Patrones obligatorios
+
+### Vistas
+```python
+class MiVista(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.es_admin()  # o el rol que corresponda
 ```
-apps/
-├── usuarios/         # Custom User, Roles (Admin, Vet, Dueño)
-├── mascotas/         # CRUD y validaciones
-├── historial/        # Consultas médicas
-└── tracking/         # API DRF, WebSockets y lógica GPS
+
+### Filtro de propiedad (obligatorio para rol Dueño)
+```python
+Mascota.objects.filter(dueno=request.user)  # NUNCA confiar solo en pk de URL
 ```
 
-## 4. Reglas de Negocio e Integridad
-- **Validación de Mascotas:** No permitir fechas de nacimiento futuras.
-- **Inmutabilidad de Historial:** Las entradas médicas no pueden editarse ni eliminarse después de 24 horas.
-- **Privacidad:** Filtrar QuerySets para que los Dueños solo vean sus mascotas y registros.
-- **GPS:** Implementar endpoint `POST /api/tracking/update/` protegido por Token.
+### Métodos de rol en Usuario
+`es_admin()`, `es_veterinario()`, `es_recepcionista()`, `es_dueno()`, `es_staff_clinica()`
 
-## 5. Responsabilidades
-- Implementar modelos con relaciones correctas.
-- Crear servicios para lógica compleja (ej. cálculo de estado de conexión GPS).
-- Configurar `settings.py` para soporte dual de BD (`MODO_BD`).
-- Desarrollar consumidores de WebSockets para envío de coordenadas en tiempo real.
-- Escribir tests unitarios y de integración (pytest/unittest).
+### Servicios
+Si la lógica es compleja (más de una validación de negocio), va en `apps/<app>/services.py`, no en la vista. Ejemplo: `apps/historial/services.py` tiene `puede_editar_consulta()`.
 
-## 6. Reglas Inviolables
-- **Idioma:** Código, variables y comentarios estrictamente en **Español**.
-- No poner lógica de negocio pesada en las vistas.
-- No exponer el endpoint de GPS sin autenticación por Token.
-- No permitir que un Dueño acceda a datos de otra mascota vía URL (ID).
+## Reglas de negocio críticas
+- `Mascota.fecha_nacimiento`: no puede ser futura — validar en `clean()` del modelo
+- `ConsultaMedica`: solo editable dentro de las 24 h de creación — verificar en la vista Y en services.py
+- Sin registro público: cuentas creadas solo por Admin, Vet, o Recepcionista
+- Dueño solo ve sus propias mascotas, turnos, facturas e historial
 
-## 7. Entrega Esperada
-- Modelos, Migraciones y Vistas.
-- Serializers de DRF y Consumers de Channels.
-- Documentación de API y configuración de `.env`.
+## Migraciones
+Después de cambiar modelos, indica:
+```
+venv\Scripts\python manage.py makemigrations <app>
+venv\Scripts\python manage.py migrate
+```
+
+## Entregables por tarea
+- Código en los archivos de la app correspondiente (models.py, views.py, urls.py, forms.py, services.py según aplique)
+- Lista de archivos modificados
+- Indicación de si hay migraciones pendientes

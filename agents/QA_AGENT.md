@@ -1,26 +1,54 @@
-# QA_AGENT.md
-# Agente QA y Pruebas
+# Agente QA
 
-## 1. Rol
-Garantizar que el sistema funcione según lo especificado en el `prompt_veterinaria.md`, con especial énfasis en la lógica de negocio y el tiempo real.
+## Rol
+Validar que la implementación cumple las reglas de negocio y no introduce regresiones. Crear tests donde no existan.
 
-## 2. Pruebas Críticas (Funcionales)
-- **Tracking:** Verificar que las coordenadas enviadas por la API se reflejen inmediatamente en el mapa de OpenStreetMap del dueño.
-- **Historial Médico:** Intentar editar una consulta después de 24 horas y confirmar que el sistema lo rechaza.
-- **Validación de Fecha:** Intentar registrar una mascota con fecha de nacimiento futura.
-- **Aislamiento de Datos:** Confirmar que el Dueño A no puede ver las mascotas del Dueño B.
+## Proyecto
+- Directorio: `C:\git\veterinaria`
+- Ejecutar tests: `venv\Scripts\python manage.py test apps.<app>`
+- Ejecutar todos los tests: `venv\Scripts\python manage.py test`
 
-## 3. Pruebas Técnicas
-- **Base de Datos:** Verificar que el sistema funciona correctamente tanto en SQLite como en SQL Server.
-- **WebSockets:** Probar la reconexión automática del cliente si el socket se cierra.
-- **Responsive:** Validar que el mapa y las tablas de historial sean legibles en dispositivos móviles.
+## Tests prioritarios por área
 
-## 4. Escenarios de Prueba de GPS
-1. Enviar coordenadas válidas -> Marcador se mueve.
-2. Dejar de enviar datos por 11 minutos -> Estado cambia a "Desconectado".
-3. Enviar 6 coordenadas seguidas -> El mapa muestra el rastro de las últimas 5.
+### Modelos
+- `Mascota.fecha_nacimiento` futura debe fallar en `clean()`
+- `ConsultaMedica` no editable después de 24 h (verificar en services.py)
 
-## 5. Reporte de Calidad
-- Estado de los flujos principales (Aprobado/Fallido).
-- Bugs encontrados con pasos de reproducción.
-- Sugerencias de mejora en la UX del mapa.
+### Vistas — aislamiento de dueño
+- Un dueño NO puede acceder a mascotas de otro dueño por URL (IDOR)
+- Un dueño NO puede ver turnos/facturas/historial ajenos
+
+### Permisos de rol
+- Recepcionista NO puede acceder a URLs de CRUD de mascotas
+- Dueño NO puede aprobar/rechazar turnos
+- Usuario anónimo redirige a login en todas las vistas protegidas
+
+### Flujos de negocio
+- Turno: transición de estados `pendiente → aprobado → completado`
+- Factura: solo se puede crear desde un turno `completado`
+- Factura con `estado=anulado` no debe sumarse en reportes
+
+## Formato de tests
+```python
+# apps/<app>/tests.py
+from django.test import TestCase, Client
+from django.urls import reverse
+from apps.usuarios.models import Usuario
+from apps.<app>.models import <Modelo>
+
+class <Modelo>Tests(TestCase):
+    def setUp(self):
+        self.admin = Usuario.objects.create_user(username='admin', password='pass', rol='admin')
+        self.dueno = Usuario.objects.create_user(username='dueno', password='pass', rol='dueno')
+        self.client = Client()
+
+    def test_<nombre_descriptivo>(self):
+        self.client.login(username='dueno', password='pass')
+        response = self.client.get(reverse('<namespace>:<vista>', args=[...]))
+        self.assertEqual(response.status_code, 200)  # o 403 según el caso
+```
+
+## Entregables
+- Tests creados o actualizados en `apps/<app>/tests.py`
+- Resultado de la corrida (`OK` o lista de fallos con descripción)
+- Si hay fallos: descripción del problema y sugerencia de fix
