@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Factura #{{ factura.id }} — VetGestión{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'lista_facturas' %}" class="text-sm text-indigo-500 hover:underline">← Volver a facturas</a>
+</div>
+
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+        <div class="flex justify-between items-start mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Factura #{{ factura.id }}</h1>
+                <p class="text-gray-500 mt-1">Emitida el {{ factura.fecha_emision|date:"d/m/Y H:i" }}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-sm font-medium {{ factura.get_color_estado }}">
+                {{ factura.get_estado_display }}
+            </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 mb-8 text-sm">
+            <div>
+                <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Dueño</p>
+                <p class="font-medium text-gray-900">{{ factura.dueno.get_full_name|default:factura.dueno.username }}</p>
+                {% if factura.dueno.telefono %}<p class="text-gray-500">{{ factura.dueno.telefono }}</p>{% endif %}
+            </div>
+            <div>
+                <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Mascota / Turno</p>
+                <p class="font-medium text-gray-900">{{ factura.turno.mascota.nombre }}</p>
+                <p class="text-gray-500">Turno del {{ factura.turno.fecha_hora|date:"d/m/Y" }}</p>
+            </div>
+        </div>
+
+        <table class="min-w-full mb-6">
+            <thead>
+                <tr class="border-b border-gray-200">
+                    <th class="text-left text-xs font-medium text-gray-500 uppercase pb-2">Descripción</th>
+                    <th class="text-right text-xs font-medium text-gray-500 uppercase pb-2">Precio unit.</th>
+                    <th class="text-right text-xs font-medium text-gray-500 uppercase pb-2">Cant.</th>
+                    <th class="text-right text-xs font-medium text-gray-500 uppercase pb-2">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for item in items %}
+                <tr>
+                    <td class="py-3 text-sm text-gray-900">{{ item.descripcion }}</td>
+                    <td class="py-3 text-sm text-gray-500 text-right">${{ item.precio_unitario }}</td>
+                    <td class="py-3 text-sm text-gray-500 text-right">{{ item.cantidad }}</td>
+                    <td class="py-3 text-sm font-medium text-gray-900 text-right">${{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="border-t-2 border-gray-200">
+                    <td colspan="3" class="pt-3 text-right font-semibold text-gray-900">Total:</td>
+                    <td class="pt-3 text-right text-xl font-bold text-indigo-600">${{ factura.total }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        {% if factura.notas %}
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Notas</p>
+            <p class="text-sm text-gray-700">{{ factura.notas }}</p>
+        </div>
+        {% endif %}
+
+        {% if user.es_admin or user.es_recepcionista %}
+        <div class="border-t border-gray-100 pt-6">
+            <h3 class="font-medium text-gray-900 mb-3">Cambiar estado</h3>
+            <form method="post" action="{% url 'cambiar_estado_factura' factura.pk %}" class="flex gap-3 items-end">
+                {% csrf_token %}
+                <div class="flex-1">
+                    {{ form_estado }}
+                </div>
+                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition">
+                    Actualizar estado
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

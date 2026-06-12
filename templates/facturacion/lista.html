@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Facturación — VetGestión{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">
+        {% if user.es_dueno %}Mis Facturas{% else %}Facturación{% endif %}
+    </h1>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
+                {% if not user.es_dueno %}<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dueño</th>{% endif %}
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mascota</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha emisión</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acción</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for factura in facturas %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 text-sm font-medium text-gray-900">#{{ factura.id }}</td>
+                {% if not user.es_dueno %}<td class="px-6 py-4 text-sm text-gray-700">{{ factura.dueno.get_full_name|default:factura.dueno.username }}</td>{% endif %}
+                <td class="px-6 py-4 text-sm text-gray-700">{{ factura.turno.mascota.nombre }}</td>
+                <td class="px-6 py-4 text-sm text-gray-500">{{ factura.fecha_emision|date:"d/m/Y" }}</td>
+                <td class="px-6 py-4 text-sm font-medium text-gray-900">${{ factura.total }}</td>
+                <td class="px-6 py-4">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium {{ factura.get_color_estado }}">
+                        {{ factura.get_estado_display }}
+                    </span>
+                </td>
+                <td class="px-6 py-4">
+                    <a href="{% url 'detalle_factura' factura.pk %}" class="text-indigo-600 hover:underline text-xs">Ver detalle</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="px-6 py-8 text-center text-gray-400">No hay facturas registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

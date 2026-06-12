@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Ubicación en Tiempo Real - VetGestión{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Seguimiento GPS</h1>
+            <p class="text-sm text-gray-500">Visualiza la ubicación de tus mascotas en tiempo real.</p>
+        </div>
+        <div id="status-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+            Conectando...
+        </div>
+    </div>
+    
+    <div class="p-4">
+        <!-- Mapa de OpenStreetMap -->
+        <div id="map" class="shadow-inner border border-gray-300"></div>
+    </div>
+    
+    <div class="p-6 bg-gray-50 border-t border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">Mis Mascotas con GPS</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Ejemplo de tarjeta de mascota con estado -->
+            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                    M
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-900">Max</h3>
+                    <p class="text-xs text-green-600 flex items-center">
+                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span> En línea
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Inicialización del Mapa de OpenStreetMap
+    const map = L.map('map').setView([-34.6037, -58.3816], 13); // Buenos Aires por defecto
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let markers = {};
+
+    // Configuración de WebSockets para Tracking Real-time
+    const trackingSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/tracking/'
+    );
+
+    trackingSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const { id_collar, lat, lng, nombre } = data;
+
+        if (markers[id_collar]) {
+            markers[id_collar].setLatLng([lat, lng]);
+        } else {
+            markers[id_collar] = L.marker([lat, lng]).addTo(map)
+                .bindPopup(`<b>${nombre}</b><br>Ubicación actual`)
+                .openPopup();
+        }
+        
+        // Ajustar vista para mostrar marcador si es el único
+        if (Object.keys(markers).length === 1) {
+            map.panTo([lat, lng]);
+        }
+    };
+
+    trackingSocket.onopen = function() {
+        document.getElementById('status-badge').className = 'px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800';
+        document.getElementById('status-badge').innerText = 'Conectado';
+    };
+
+    trackingSocket.onclose = function() {
+        document.getElementById('status-badge').className = 'px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800';
+        document.getElementById('status-badge').innerText = 'Desconectado';
+    };
+</script>
+{% endblock %}

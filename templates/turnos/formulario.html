@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }} — VetGestión{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="mb-6">
+        <a href="{% url 'lista_turnos' %}" class="text-sm text-indigo-500 hover:underline">← Volver a turnos</a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-2">{{ titulo }}</h1>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+        <form method="post">
+            {% csrf_token %}
+            <div class="space-y-4 mb-6">
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ field.label }}{% if field.field.required %} *{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-md font-medium hover:bg-indigo-700 transition">
+                    Solicitar turno
+                </button>
+                <a href="{% url 'lista_turnos' %}" class="px-6 py-2 rounded-md font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

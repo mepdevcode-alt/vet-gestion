@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear cuenta de Dueño — VetGestión{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+        <a href="{% url 'lista_usuarios' %}" class="text-sm text-indigo-500 hover:underline">← Volver a usuarios</a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-2">Nueva Cuenta de Dueño</h1>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                {% for field in form %}
+                <div class="{% if field.name == 'password1' or field.name == 'password2' %}col-span-1{% else %}col-span-1{% endif %}">
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ field.label }}{% if field.field.required %} *{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+                {% for error in form.non_field_errors %}
+                <p class="text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-md font-medium hover:bg-indigo-700 transition">
+                    Crear cuenta
+                </button>
+                <a href="{% url 'lista_usuarios' %}" class="px-6 py-2 rounded-md font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

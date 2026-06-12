@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Historial de {{ mascota.nombre }} — VetGestión{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'detalle_mascota' mascota.pk %}" class="text-sm text-indigo-500 hover:underline">← Volver a {{ mascota.nombre }}</a>
+</div>
+
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Historial médico</h1>
+        <p class="text-gray-500 mt-1">{{ mascota.nombre }} — {{ mascota.get_especie_display }}</p>
+    </div>
+    {% if user.es_admin or user.es_veterinario %}
+    <a href="{% url 'crear_consulta' mascota.pk %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700 transition flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nueva consulta
+    </a>
+    {% endif %}
+</div>
+
+<div class="space-y-4">
+    {% for consulta in consultas %}
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h3 class="font-semibold text-gray-900 text-lg">{{ consulta.motivo }}</h3>
+                <p class="text-sm text-gray-500">{{ consulta.fecha|date:"d/m/Y H:i" }} — Dr/a. {{ consulta.veterinario.get_full_name|default:consulta.veterinario.username }}</p>
+            </div>
+            {% if user.es_admin or user.es_veterinario %}
+                {% if consulta.pk in consultas_editables %}
+                <a href="{% url 'editar_consulta' consulta.pk %}" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-md hover:bg-indigo-100">
+                    Editar
+                </a>
+                {% else %}
+                <span class="text-xs bg-gray-100 text-gray-400 px-3 py-1 rounded-md" title="Solo editable dentro de las 24 horas">
+                    Solo lectura
+                </span>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Diagnóstico</p>
+                <p class="text-gray-700">{{ consulta.diagnostico }}</p>
+            </div>
+            <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Tratamiento</p>
+                <p class="text-gray-700">{{ consulta.tratamiento }}</p>
+            </div>
+            {% if consulta.observaciones %}
+            <div>
+                <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Observaciones</p>
+                <p class="text-gray-700">{{ consulta.observaciones }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="bg-white rounded-xl border border-dashed border-gray-300 p-12 text-center">
+        <p class="text-gray-400">No hay consultas médicas registradas para {{ mascota.nombre }}.</p>
+        {% if user.es_admin or user.es_veterinario %}
+        <a href="{% url 'crear_consulta' mascota.pk %}" class="mt-2 inline-block text-indigo-600 hover:underline text-sm">+ Registrar primera consulta</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

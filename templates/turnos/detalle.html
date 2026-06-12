@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Turno #{{ turno.pk }} — VetGestión{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'lista_turnos' %}" class="text-sm text-indigo-500 hover:underline">← Volver a turnos</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Turno #{{ turno.pk }}</h1>
+                    <p class="text-gray-500">{{ turno.fecha_hora|date:"d/m/Y H:i" }}</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-sm font-medium {{ turno.get_color_estado }}">
+                    {{ turno.get_estado_display }}
+                </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+                <div>
+                    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Mascota</p>
+                    <p class="font-medium text-gray-900">{{ turno.mascota.nombre }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Dueño</p>
+                    <p class="font-medium text-gray-900">{{ turno.mascota.dueno.get_full_name|default:turno.mascota.dueno.username }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Veterinario</p>
+                    <p class="font-medium text-gray-900">{{ turno.veterinario.get_full_name|default:"Sin asignar" }}</p>
+                </div>
+                <div>
+                    <p class="text-gray-400 text-xs uppercase tracking-wide mb-1">Motivo</p>
+                    <p class="font-medium text-gray-900">{{ turno.motivo }}</p>
+                </div>
+            </div>
+
+            {% if turno.notas_recepcion %}
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Notas de recepción</p>
+                <p class="text-sm text-gray-700">{{ turno.notas_recepcion }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if user.es_admin or user.es_recepcionista %}
+    <div>
+        {% if turno.estado == 'pendiente' %}
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <h2 class="font-semibold text-gray-900 mb-4">Gestionar turno</h2>
+            <form method="post" action="{% url 'aprobar_turno' turno.pk %}" class="space-y-3">
+                {% csrf_token %}
+                {% for field in form_gestion %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+                {% endfor %}
+                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md text-sm font-medium hover:bg-green-700 transition">
+                    Aprobar turno
+                </button>
+            </form>
+            <form method="post" action="{% url 'rechazar_turno' turno.pk %}" class="mt-3">
+                {% csrf_token %}
+                <textarea name="notas_recepcion" rows="2" placeholder="Motivo del rechazo (opcional)"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm mb-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                <button type="submit" class="w-full bg-red-50 text-red-600 py-2 rounded-md text-sm font-medium hover:bg-red-100 transition">
+                    Rechazar turno
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if turno.estado == 'completado' %}
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <h2 class="font-semibold text-gray-900 mb-3">Facturación</h2>
+            {% if turno.tiene_factura %}
+            <a href="{% url 'detalle_factura' turno.factura.pk %}" class="block text-center bg-indigo-50 text-indigo-600 py-2 rounded-md text-sm hover:bg-indigo-100">
+                Ver factura #{{ turno.factura.pk }}
+            </a>
+            {% else %}
+            <a href="{% url 'crear_factura' turno.pk %}" class="block text-center bg-indigo-600 text-white py-2 rounded-md text-sm font-medium hover:bg-indigo-700">
+                Emitir factura
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if turno.estado == 'aprobado' and user.es_veterinario %}
+    <div>
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <form method="post" action="{% url 'completar_turno' turno.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition">
+                    Marcar como completado
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

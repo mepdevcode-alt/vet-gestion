@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Recepcionista — VetGestión{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Bandeja de Recepción</h1>
+    <p class="text-gray-500 mt-1">Turnos y facturas pendientes</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="font-semibold text-gray-900">Turnos pendientes de aprobación</h2>
+            <a href="{% url 'lista_turnos' %}" class="text-xs text-indigo-500 hover:underline">Ver todos →</a>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for turno in turnos_pendientes %}
+            <div class="px-6 py-4">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <p class="font-medium text-gray-900">{{ turno.mascota.nombre }}</p>
+                        <p class="text-sm text-gray-500">{{ turno.motivo }}</p>
+                        <p class="text-xs text-gray-400">Dueño: {{ turno.mascota.dueno.get_full_name|default:turno.mascota.dueno.username }}</p>
+                        <p class="text-xs text-gray-400">{{ turno.fecha_hora|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'detalle_turno' turno.pk %}" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-md hover:bg-indigo-100 inline-block">
+                    Gestionar →
+                </a>
+            </div>
+            {% empty %}
+            <p class="px-6 py-8 text-gray-400 text-sm text-center">No hay turnos pendientes.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="font-semibold text-gray-900">Facturas pendientes de cobro</h2>
+            <a href="{% url 'lista_facturas' %}" class="text-xs text-indigo-500 hover:underline">Ver todas →</a>
+        </div>
+        <div class="divide-y divide-gray-100">
+            {% for factura in facturas_pendientes %}
+            <div class="px-6 py-4 flex justify-between items-center">
+                <div>
+                    <p class="font-medium text-gray-900">Factura #{{ factura.id }}</p>
+                    <p class="text-sm text-gray-500">{{ factura.dueno.get_full_name|default:factura.dueno.username }}</p>
+                    <p class="text-xs text-gray-400">{{ factura.fecha_emision|date:"d/m/Y" }} — ${{ factura.total }}</p>
+                </div>
+                <a href="{% url 'detalle_factura' factura.pk %}" class="text-xs bg-yellow-50 text-yellow-700 px-3 py-1 rounded-md hover:bg-yellow-100">
+                    Cobrar →
+                </a>
+            </div>
+            {% empty %}
+            <p class="px-6 py-8 text-gray-400 text-sm text-center">No hay facturas pendientes.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

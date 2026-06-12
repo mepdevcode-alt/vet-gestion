@@ -1,0 +1,7 @@
+/* Estilos adicionales mínimos para VetGestión */
+/* La mayor parte del diseño se maneja con Tailwind CSS via CDN */
+
+/* Transición suave para todos los elementos interactivos */
+a, button, input, select, textarea {
+    transition: all 0.15s ease-in-out;
+}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Mascotas — VetGestión{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">
+        {% if user.es_dueno %}Mis Mascotas{% else %}Mascotas{% endif %}
+    </h1>
+    {% if user.es_admin or user.es_veterinario %}
+    <a href="{% url 'crear_mascota' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700 transition flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nueva Mascota
+    </a>
+    {% endif %}
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for mascota in mascotas %}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
+        <div class="h-40 bg-gray-100 relative">
+            {% if mascota.foto %}
+                <img src="{{ mascota.foto.url }}" alt="{{ mascota.nombre }}" class="w-full h-full object-cover">
+            {% else %}
+                <div class="w-full h-full flex items-center justify-center text-4xl">
+                    {% if mascota.especie == 'perro' %}🐶{% elif mascota.especie == 'gato' %}🐱{% elif mascota.especie == 'ave' %}🐦{% else %}🐾{% endif %}
+                </div>
+            {% endif %}
+            <span class="absolute top-3 right-3 bg-white text-gray-700 text-xs font-semibold px-2 py-1 rounded-full shadow">
+                {{ mascota.get_especie_display }}
+            </span>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold text-gray-900">{{ mascota.nombre }}</h3>
+            <p class="text-sm text-gray-500 mb-1">{{ mascota.raza|default:"Sin raza especificada" }} • {{ mascota.edad }} año{{ mascota.edad|pluralize:"s" }}</p>
+            <p class="text-xs text-gray-400 mb-4">{{ mascota.peso }} kg</p>
+            {% if not user.es_dueno %}
+            <p class="text-sm text-gray-600 mb-4 flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                {{ mascota.dueno.get_full_name|default:mascota.dueno.username }}
+            </p>
+            {% endif %}
+            <div class="flex gap-2">
+                <a href="{% url 'detalle_mascota' mascota.pk %}" class="flex-1 text-center bg-gray-100 text-gray-700 py-2 rounded-md text-sm font-medium hover:bg-gray-200 transition">
+                    Ver detalles
+                </a>
+                {% if user.es_admin or user.es_veterinario %}
+                <a href="{% url 'historial_mascota' mascota.pk %}" class="flex-1 text-center bg-indigo-50 text-indigo-600 py-2 rounded-md text-sm font-medium hover:bg-indigo-100 transition">
+                    Historial
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full py-16 text-center bg-white rounded-xl border border-dashed border-gray-300">
+        <p class="text-gray-400 text-lg mb-2">🐾</p>
+        <p class="text-gray-500">No hay mascotas registradas.</p>
+        {% if user.es_admin or user.es_veterinario %}
+        <a href="{% url 'crear_mascota' %}" class="mt-3 inline-block text-indigo-600 hover:underline text-sm">+ Agregar mascota</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Administrador — VetGestión{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Panel de Administración</h1>
+    <p class="text-gray-500 mt-1">Resumen general del sistema</p>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <p class="text-sm font-medium text-gray-500">Total mascotas</p>
+        <p class="text-3xl font-bold text-indigo-600 mt-1">{{ total_mascotas }}</p>
+        <a href="{% url 'lista_mascotas' %}" class="text-xs text-indigo-500 hover:underline mt-2 inline-block">Ver todas →</a>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <p class="text-sm font-medium text-gray-500">Turnos pendientes</p>
+        <p class="text-3xl font-bold text-yellow-500 mt-1">{{ turnos_pendientes }}</p>
+        <a href="{% url 'lista_turnos' %}" class="text-xs text-yellow-600 hover:underline mt-2 inline-block">Gestionar →</a>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <p class="text-sm font-medium text-gray-500">Facturas pendientes</p>
+        <p class="text-3xl font-bold text-red-500 mt-1">{{ facturas_pendientes }}</p>
+        <a href="{% url 'lista_facturas' %}" class="text-xs text-red-500 hover:underline mt-2 inline-block">Ver →</a>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+        <p class="text-sm font-medium text-gray-500">Accesos rápidos</p>
+        <div class="mt-2 space-y-1">
+            <a href="{% url 'crear_dueno' %}" class="block text-xs text-indigo-500 hover:underline">+ Nuevo dueño</a>
+            <a href="{% url 'crear_mascota' %}" class="block text-xs text-indigo-500 hover:underline">+ Nueva mascota</a>
+            <a href="{% url 'lista_usuarios' %}" class="block text-xs text-indigo-500 hover:underline">Ver usuarios</a>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+    <div class="px-6 py-4 border-b border-gray-100">
+        <h2 class="font-semibold text-gray-900">Turnos recientes</h2>
+    </div>
+    <div class="divide-y divide-gray-100">
+        {% for turno in turnos_recientes %}
+        <div class="px-6 py-4 flex items-center justify-between">
+            <div>
+                <p class="font-medium text-gray-900">{{ turno.mascota.nombre }}</p>
+                <p class="text-sm text-gray-500">{{ turno.motivo }} — {{ turno.fecha_hora|date:"d/m/Y H:i" }}</p>
+            </div>
+            <span class="px-2 py-1 rounded-full text-xs font-medium {{ turno.get_color_estado }}">
+                {{ turno.get_estado_display }}
+            </span>
+        </div>
+        {% empty %}
+        <p class="px-6 py-4 text-gray-500 text-sm">No hay turnos registrados.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
