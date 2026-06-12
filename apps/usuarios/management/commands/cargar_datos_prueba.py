@@ -24,20 +24,24 @@ class Command(BaseCommand):
 
         self.stdout.write('Creando usuarios...')
 
+        PASS_ADMIN = 'Admin123.'
+        PASS_STAFF = '123456'
+
         admin = Usuario.objects.create_user(
             username='admin_clinica',
-            password='Test1234!',
+            password=PASS_ADMIN,
             first_name='Roberto',
             last_name='Gómez',
             email='admin@clinica.com',
             rol='admin',
             telefono='1145678901',
             is_staff=True,
+            is_superuser=True,
         )
 
         vet1 = Usuario.objects.create_user(
             username='dra_sofia',
-            password='Test1234!',
+            password=PASS_STAFF,
             first_name='Sofía',
             last_name='Ramírez',
             email='sofia@clinica.com',
@@ -47,7 +51,7 @@ class Command(BaseCommand):
 
         vet2 = Usuario.objects.create_user(
             username='dr_carlos',
-            password='Test1234!',
+            password=PASS_STAFF,
             first_name='Carlos',
             last_name='Mendoza',
             email='carlos@clinica.com',
@@ -57,7 +61,7 @@ class Command(BaseCommand):
 
         recep = Usuario.objects.create_user(
             username='recep_lucia',
-            password='Test1234!',
+            password=PASS_STAFF,
             first_name='Lucía',
             last_name='Fernández',
             email='lucia@clinica.com',
@@ -67,7 +71,7 @@ class Command(BaseCommand):
 
         dueno1 = Usuario.objects.create_user(
             username='juan_perez',
-            password='Test1234!',
+            password=PASS_STAFF,
             first_name='Juan',
             last_name='Pérez',
             email='juan@gmail.com',
@@ -77,7 +81,7 @@ class Command(BaseCommand):
 
         dueno2 = Usuario.objects.create_user(
             username='maria_lopez',
-            password='Test1234!',
+            password=PASS_STAFF,
             first_name='María',
             last_name='López',
             email='maria@gmail.com',
@@ -87,7 +91,7 @@ class Command(BaseCommand):
 
         dueno3 = Usuario.objects.create_user(
             username='andres_garcia',
-            password='Test1234!',
+            password=PASS_STAFF,
             first_name='Andrés',
             last_name='García',
             email='andres@gmail.com',
@@ -346,10 +350,10 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('=== Datos de prueba cargados exitosamente ==='))
         self.stdout.write('')
         self.stdout.write('Credenciales de acceso:')
-        self.stdout.write('  admin_clinica  / Test1234!  (Admin)')
-        self.stdout.write('  dra_sofia      / Test1234!  (Veterinario)')
-        self.stdout.write('  dr_carlos      / Test1234!  (Veterinario)')
-        self.stdout.write('  recep_lucia    / Test1234!  (Recepcionista)')
-        self.stdout.write('  juan_perez     / Test1234!  (Dueño)')
-        self.stdout.write('  maria_lopez    / Test1234!  (Dueño)')
-        self.stdout.write('  andres_garcia  / Test1234!  (Dueño)')
+        self.stdout.write('  admin_clinica  / Admin123.  (Admin — superusuario)')
+        self.stdout.write('  dra_sofia      / 123456     (Veterinario)')
+        self.stdout.write('  dr_carlos      / 123456     (Veterinario)')
+        self.stdout.write('  recep_lucia    / 123456     (Recepcionista)')
+        self.stdout.write('  juan_perez     / 123456     (Dueño)')
+        self.stdout.write('  maria_lopez    / 123456     (Dueño)')
+        self.stdout.write('  andres_garcia  / 123456     (Dueño)')
