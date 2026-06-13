@@ -1,8 +1,13 @@
+import io
+import qrcode
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 
 from .models import Mascota
 from .forms import FormularioMascota
@@ -84,3 +89,49 @@ class EliminarMascota(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, f'Mascota eliminada.')
         return super().form_valid(form)
+
+
+class InfoCollarPublica(View):
+    """Página pública accesible desde el QR del collar — sin login requerido."""
+
+    def get(self, request, token):
+        mascota = get_object_or_404(Mascota, token_collar=token)
+        return render(request, 'mascotas/info_collar.html', {'mascota': mascota})
+
+
+class QRCollarMascota(LoginRequiredMixin, View):
+    """Devuelve el QR del collar como imagen PNG."""
+
+    def _tiene_acceso(self, usuario, mascota: Mascota) -> bool:
+        if usuario.es_dueno():
+            return mascota.dueno == usuario
+        return usuario.es_staff_clinica()
+
+    def get(self, request, pk):
+        if request.user.es_dueno():
+            mascota = get_object_or_404(Mascota, pk=pk, dueno=request.user)
+        else:
+            mascota = get_object_or_404(Mascota, pk=pk)
+
+        if not self._tiene_acceso(request.user, mascota):
+            return HttpResponse(status=403)
+
+        url_publica = request.build_absolute_uri(
+            reverse('info_collar', kwargs={'token': mascota.token_collar})
+        )
+
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(url_publica)
+        qr.make(fit=True)
+        imagen = qr.make_image(fill_color='black', back_color='white')
+
+        buffer = io.BytesIO()
+        imagen.save(buffer, format='PNG')
+        buffer.seek(0)
+
+        descargar = request.GET.get('descargar')
+        response = HttpResponse(buffer.getvalue(), content_type='image/png')
+        if descargar:
+            nombre = f'qr-collar-{mascota.nombre.lower().replace(" ", "-")}.png'
+            response['Content-Disposition'] = f'attachment; filename="{nombre}"'
+        return response

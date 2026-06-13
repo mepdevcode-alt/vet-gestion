@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -48,6 +49,7 @@ class Mascota(models.Model):
         verbose_name='Dueño',
     )
     fecha_registro = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de registro')
+    token_collar = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, verbose_name='Token collar QR')
 
     class Meta:
         verbose_name = 'mascota'
