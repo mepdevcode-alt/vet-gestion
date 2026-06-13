@@ -25,7 +25,7 @@
                     </div>
                     <div class="flex gap-2">
                         <a href="{% url 'historial_mascota' turno.mascota.pk %}" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-md hover:bg-indigo-100">Ver historial</a>
-                        <form method="post" action="{% url 'completar_turno' turno.pk %}">
+                        <form method="post" action="{% url 'turnos:completar' turno.pk %}">
                             {% csrf_token %}
                             <button type="submit" class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-md hover:bg-green-100">Completar</button>
                         </form>
@@ -46,7 +46,7 @@
                     <span class="text-indigo-600 mr-3">🐾</span>
                     <span class="text-sm font-medium text-gray-700">Ver mascotas</span>
                 </a>
-                <a href="{% url 'lista_turnos' %}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition">
+                <a href="{% url 'turnos:turnos_hoy_vet' %}" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-indigo-50 transition">
                     <span class="text-indigo-600 mr-3">📅</span>
                     <span class="text-sm font-medium text-gray-700">Todos mis turnos ({{ total_mis_turnos }})</span>
                 </a>

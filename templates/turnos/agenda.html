@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Agenda — {{ fecha|date:"d/m/Y" }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Agenda</h1>
+
+  <!-- Navegación de fecha y filtro -->
+  <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6 flex flex-wrap items-center gap-4">
+    <a href="?fecha={{ fecha_anterior }}{% if veterinario_id %}&veterinario={{ veterinario_id }}{% endif %}"
+       class="px-3 py-1.5 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 transition">
+      ← Anterior
+    </a>
+    <span class="text-base font-semibold text-gray-900">{{ fecha|date:"l d/m/Y"|capfirst }}</span>
+    <a href="?fecha={{ fecha_siguiente }}{% if veterinario_id %}&veterinario={{ veterinario_id }}{% endif %}"
+       class="px-3 py-1.5 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 transition">
+      Siguiente →
+    </a>
+
+    <form method="get" class="ml-auto flex items-center gap-2">
+      <input type="hidden" name="fecha" value="{{ fecha|date:'Y-m-d' }}">
+      <label class="text-sm text-gray-600">Veterinario:</label>
+      <select name="veterinario" class="px-3 py-1.5 border border-gray-300 rounded-md text-sm bg-white">
+        <option value="">Todos</option>
+        {% for vet in veterinarios %}
+          <option value="{{ vet.pk }}" {% if veterinario_id == vet.pk|stringformat:"s" %}selected{% endif %}>
+            {{ vet.get_full_name|default:vet.username }}
+          </option>
+        {% endfor %}
+      </select>
+      <button type="submit"
+              class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition">
+        Filtrar
+      </button>
+    </form>
+  </div>
+
+  {% if turnos %}
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Hora</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Mascota / Dueño</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Veterinario</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Tipo</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Duración</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for turno in turnos %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 font-semibold text-gray-900">{{ turno.fecha_hora|date:"H:i" }}hs</td>
+              <td class="px-4 py-3">
+                <p class="font-medium text-gray-900">{{ turno.mascota.nombre }}</p>
+                <p class="text-xs text-gray-500">{{ turno.mascota.dueno.get_full_name|default:turno.mascota.dueno.username }}</p>
+              </td>
+              <td class="px-4 py-3 text-gray-700">
+                {% if turno.veterinario %}{{ turno.veterinario.get_full_name }}{% else %}—{% endif %}
+              </td>
+              <td class="px-4 py-3 text-gray-700">{{ turno.get_tipo_consulta_display }}</td>
+              <td class="px-4 py-3 text-gray-500">{{ turno.duracion_minutos }} min</td>
+              <td class="px-4 py-3">
+                <a href="{% url 'turnos:detalle' turno.pk %}"
+                   class="text-xs text-indigo-600 hover:underline">Ver</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="text-center py-16 text-gray-500">
+      No hay turnos aprobados para este día.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

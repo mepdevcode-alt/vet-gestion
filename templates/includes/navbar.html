@@ -18,7 +18,7 @@
                         {% endif %}
 
                         {% if user.es_admin or user.es_recepcionista %}
-                            <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
+                            <a href="{% url 'turnos:gestion' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
                                 Turnos
                             </a>
                             <a href="{% url 'lista_facturas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
@@ -27,7 +27,7 @@
                         {% endif %}
 
                         {% if user.es_veterinario %}
-                            <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
+                            <a href="{% url 'turnos:turnos_hoy_vet' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
                                 Mis Turnos
                             </a>
                         {% endif %}
@@ -36,7 +36,7 @@
                             <a href="{% url 'lista_mascotas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
                                 Mis Mascotas
                             </a>
-                            <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
+                            <a href="{% url 'turnos:mis_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
                                 Mis Turnos
                             </a>
                             <a href="{% url 'lista_facturas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
@@ -97,7 +97,9 @@
                 {% else %}
                     <a href="{% url 'lista_mascotas' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Mis Mascotas</a>
                 {% endif %}
-                <a href="{% url 'lista_turnos' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Turnos</a>
+                {% if user.es_dueno %}<a href="{% url 'turnos:mis_turnos' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Mis Turnos</a>
+                {% elif user.es_veterinario %}<a href="{% url 'turnos:turnos_hoy_vet' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Mis Turnos</a>
+                {% else %}<a href="{% url 'turnos:gestion' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Turnos</a>{% endif %}
                 <a href="{% url 'lista_facturas' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Facturas</a>
                 <form action="{% url 'logout' %}" method="post" class="pt-2">
                     {% csrf_token %}

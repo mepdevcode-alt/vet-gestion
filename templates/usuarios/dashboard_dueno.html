@@ -40,7 +40,7 @@
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
             <h2 class="font-semibold text-gray-900">Mis turnos recientes</h2>
-            <a href="{% url 'lista_turnos' %}" class="text-xs text-indigo-500 hover:underline">Ver todos →</a>
+            <a href="{% url 'turnos:mis_turnos' %}" class="text-xs text-indigo-500 hover:underline">Ver todos →</a>
         </div>
         <div class="divide-y divide-gray-100">
             {% for turno in mis_turnos %}
@@ -59,7 +59,7 @@
             {% endfor %}
         </div>
         <div class="px-6 py-3 border-t border-gray-100">
-            <a href="{% url 'solicitar_turno' %}" class="text-sm text-indigo-600 hover:underline font-medium">+ Solicitar turno</a>
+            <a href="{% url 'turnos:solicitar' %}" class="text-sm text-indigo-600 hover:underline font-medium">+ Solicitar turno</a>
         </div>
     </div>
 

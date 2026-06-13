@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Turnos de Hoy{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+
+  <h1 class="text-2xl font-bold text-gray-900 mb-2">Mis turnos de hoy</h1>
+  <p class="text-gray-500 text-sm mb-6">{% now "l d/m/Y"|capfirst %}</p>
+
+  {% if turnos %}
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Hora</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Mascota</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Dueño</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Tipo</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600">Duración</th>
+            <th class="px-4 py-3 text-left font-medium text-gray-600"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          {% for turno in turnos %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 font-semibold text-gray-900">{{ turno.fecha_hora|date:"H:i" }}hs</td>
+              <td class="px-4 py-3">
+                <p class="font-medium text-gray-900">{{ turno.mascota.nombre }}</p>
+                <p class="text-xs text-gray-500">{{ turno.mascota.get_especie_display }}</p>
+              </td>
+              <td class="px-4 py-3 text-gray-700">
+                {{ turno.mascota.dueno.get_full_name|default:turno.mascota.dueno.username }}
+              </td>
+              <td class="px-4 py-3 text-gray-700">{{ turno.get_tipo_consulta_display }}</td>
+              <td class="px-4 py-3 text-gray-500">{{ turno.duracion_minutos }} min</td>
+              <td class="px-4 py-3">
+                <a href="{% url 'turnos:detalle' turno.pk %}"
+                   class="text-xs text-indigo-600 hover:underline">Ver detalle</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="text-center py-16 text-gray-500">
+      No tenés turnos aprobados para hoy.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

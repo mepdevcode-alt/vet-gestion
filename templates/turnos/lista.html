@@ -8,7 +8,7 @@
         {% if user.es_dueno %}Mis Turnos{% elif user.es_veterinario %}Mis Turnos Asignados{% else %}Gestión de Turnos{% endif %}
     </h1>
     {% if user.es_dueno %}
-    <a href="{% url 'solicitar_turno' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700 transition flex items-center gap-2">
+    <a href="{% url 'turnos:solicitar' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700 transition flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
         Solicitar turno
     </a>
@@ -43,14 +43,14 @@
                 </td>
                 <td class="px-6 py-4 text-sm">
                     <div class="flex gap-2 items-center">
-                        <a href="{% url 'detalle_turno' turno.pk %}" class="text-indigo-600 hover:underline text-xs">Ver</a>
+                        <a href="{% url 'turnos:detalle' turno.pk %}" class="text-indigo-600 hover:underline text-xs">Ver</a>
                         {% if turno.estado == 'completado' and not turno.tiene_factura and user.es_admin %}
                         <a href="{% url 'crear_factura' turno.pk %}" class="text-green-600 hover:underline text-xs">Facturar</a>
                         {% elif turno.estado == 'completado' and not turno.tiene_factura and user.es_recepcionista %}
                         <a href="{% url 'crear_factura' turno.pk %}" class="text-green-600 hover:underline text-xs">Facturar</a>
                         {% endif %}
                         {% if turno.estado == 'aprobado' and user.es_veterinario %}
-                        <form method="post" action="{% url 'completar_turno' turno.pk %}" class="inline">
+                        <form method="post" action="{% url 'turnos:completar' turno.pk %}" class="inline">
                             {% csrf_token %}
                             <button type="submit" class="text-blue-600 hover:underline text-xs">Completar</button>
                         </form>

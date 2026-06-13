@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Turnos{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Mis Turnos</h1>
+    <a href="{% url 'turnos:solicitar' %}"
+       class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition">
+      + Solicitar turno
+    </a>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="mb-4 px-4 py-3 rounded-md
+        {% if message.tags == 'success' %}bg-green-100 text-green-800
+        {% elif message.tags == 'error' %}bg-red-100 text-red-800
+        {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if turnos %}
+    <div class="space-y-4">
+      {% for turno in turnos %}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-lg font-semibold text-gray-900">{{ turno.mascota.nombre }}</p>
+              <p class="text-sm text-gray-500">{{ turno.mascota.get_especie_display }}</p>
+              <div class="mt-2 text-sm text-gray-700 space-y-1">
+                <p><span class="font-medium">Tipo:</span> {{ turno.get_tipo_consulta_display }} ({{ turno.duracion_minutos }} min)</p>
+                <p><span class="font-medium">Fecha:</span> {{ turno.fecha_hora|date:"d/m/Y H:i" }}hs</p>
+                {% if turno.veterinario %}
+                  <p><span class="font-medium">Veterinario:</span> {{ turno.veterinario.get_full_name }}</p>
+                {% endif %}
+                {% if turno.estado == 'rechazado' and turno.motivo_rechazo %}
+                  <p class="text-red-600"><span class="font-medium">Motivo de rechazo:</span> {{ turno.motivo_rechazo }}</p>
+                {% endif %}
+                {% if turno.estado == 'cancelado' and turno.motivo_cancelacion %}
+                  <p class="text-gray-500"><span class="font-medium">Motivo de cancelación:</span> {{ turno.motivo_cancelacion }}</p>
+                {% endif %}
+              </div>
+            </div>
+            <span class="px-3 py-1 text-xs font-semibold rounded-full {{ turno.get_color_estado }}">
+              {{ turno.get_estado_display }}
+            </span>
+          </div>
+          <div class="mt-4 flex gap-2">
+            <a href="{% url 'turnos:detalle' turno.pk %}"
+               class="px-3 py-1.5 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
+              Ver detalle
+            </a>
+            {% if turno.estado == 'pendiente' or turno.estado == 'aprobado' %}
+              <a href="{% url 'turnos:cancelar' turno.pk %}"
+                 class="px-3 py-1.5 text-sm border border-red-300 rounded-md text-red-600 hover:bg-red-50 transition">
+                Cancelar
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-16">
+      <p class="text-gray-500 mb-4">No tenés turnos registrados.</p>
+      <a href="{% url 'turnos:solicitar' %}"
+         class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition">
+        Solicitar tu primer turno
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

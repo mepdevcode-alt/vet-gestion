@@ -12,7 +12,7 @@
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
             <h2 class="font-semibold text-gray-900">Turnos pendientes de aprobación</h2>
-            <a href="{% url 'lista_turnos' %}" class="text-xs text-indigo-500 hover:underline">Ver todos →</a>
+            <a href="{% url 'turnos:gestion' %}" class="text-xs text-indigo-500 hover:underline">Ver todos →</a>
         </div>
         <div class="divide-y divide-gray-100">
             {% for turno in turnos_pendientes %}
@@ -25,7 +25,7 @@
                         <p class="text-xs text-gray-400">{{ turno.fecha_hora|date:"d/m/Y H:i" }}</p>
                     </div>
                 </div>
-                <a href="{% url 'detalle_turno' turno.pk %}" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-md hover:bg-indigo-100 inline-block">
+                <a href="{% url 'turnos:detalle' turno.pk %}" class="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-md hover:bg-indigo-100 inline-block">
                     Gestionar →
                 </a>
             </div>
