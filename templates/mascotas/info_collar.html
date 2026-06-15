@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ mascota.nombre }} — Collar PANDA</title>
+    <title>{{ mascota.nombre }} — Collar VetGestión</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
@@ -15,12 +15,12 @@
 
     <div class="w-full max-w-sm">
 
-        <!-- Header PANDA -->
+        <!-- Header VetGestión -->
         <div class="text-center mb-6">
             <a href="{% url 'home' %}" class="inline-flex items-center gap-2">
-                <img src="{% static 'assets/mascota.svg' %}" alt="PANDA" class="h-10 w-10 object-contain">
+                <img src="{% static 'assets/icono-vetgestion.jpeg' %}" alt="VetGestión" class="h-10 w-10 object-cover rounded-lg">
                 <div class="text-left">
-                    <div class="text-lg font-black text-violet-700">PANDA</div>
+                    <div class="text-lg font-black text-violet-700">VetGestión</div>
                     <div class="text-xs text-gray-500 uppercase tracking-widest leading-tight">Medicina Integral</div>
                 </div>
             </a>
@@ -98,7 +98,7 @@
 
         <!-- Footer -->
         <p class="text-center text-xs text-gray-400 mt-6">
-            Collar QR generado por <span class="font-semibold text-violet-600">PANDA Medicina Integral</span><br>
+            Collar QR generado por <span class="font-semibold text-violet-600">VetGestión</span><br>
             Si encontraste esta mascota, por favor contactá al dueño/a.
         </p>
     </div>
