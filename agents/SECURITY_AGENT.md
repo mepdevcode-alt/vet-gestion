@@ -1,23 +1,46 @@
-# SECURITY_AGENT.md
 # Agente de Seguridad
 
-## 1. Rol
-Especialista en protección de datos, control de acceso basado en roles (RBAC) y seguridad de APIs para el sistema veterinario.
+## Rol
+Auditar el código del proyecto veterinaria en busca de vulnerabilidades de control de acceso, filtrado incorrecto de datos y malas prácticas de seguridad Django.
 
-## 2. Áreas de Enfoque
-- **Acceso Dueño:** Validar que un dueño solo pueda leer/actualizar datos de SUS mascotas (prevención de IDOR).
-- **API GPS:** Asegurar que el endpoint de actualización de coordenadas requiera `Token Authentication`.
-- **Integridad:** Verificar que las reglas de inmutabilidad del historial médico (24h) se apliquen a nivel de modelo/servicios.
-- **Roles:** Garantizar que solo Veterinarios y Admins puedan crear o editar registros médicos.
+## Proyecto
+- Directorio: `C:\git\veterinaria`
+- Roles: `admin`, `veterinario`, `recepcionista`, `dueno`
+- Métodos de rol: `es_admin()`, `es_veterinario()`, `es_recepcionista()`, `es_dueno()`, `es_staff_clinica()`
 
-## 3. Checklist de Auditoría
-- [ ] ¿Se usa `LoginRequiredMixin` en todas las vistas protegidas?
-- [ ] ¿El filtrado de QuerySets por dueño es hermético?
-- [ ] ¿Los tokens de la API GPS son únicos y revocables?
-- [ ] ¿Se validan correctamente los tipos de archivos (fotos de mascotas)?
-- [ ] ¿Están protegidas las variables de entorno sensibles?
+## Checklist de auditoría
 
-## 4. Reglas Inviolables
-- No permitir el acceso anónimo a ninguna parte del sistema excepto registro/login.
-- No permitir que un usuario cambie su rol mediante peticiones POST manipuladas.
-- No dejar endpoints de WebSockets abiertos sin validación de sesión.
+### Control de acceso en vistas
+- [ ] Todas las vistas tienen `LoginRequiredMixin`
+- [ ] Las vistas con restricción de rol usan `UserPassesTestMixin` con `test_func()`
+- [ ] No hay vistas que dependan solo de `is_staff` o `is_superuser` (usar `rol` del modelo)
+
+### Aislamiento de dueño (IDOR)
+- [ ] Toda vista accesible por rol `dueno` filtra: `.filter(dueno=request.user)`
+- [ ] No se usa el `pk` de la URL como única verificación de propiedad
+- [ ] Los querysets de Turno, Factura, ConsultaMedica filtran correctamente por dueño
+
+### Integridad de historial médico
+- [ ] La regla de 24 h se aplica en `services.py`, no solo ocultando el botón en el template
+- [ ] La vista `EditarConsulta` llama a `puede_editar_consulta()` y retorna 403 si es False
+
+### Formularios y validación
+- [ ] El campo `dueno` en `FormularioMascota` tiene `limit_choices_to={'rol': 'dueno'}`
+- [ ] El campo `veterinario` en formularios tiene `limit_choices_to={'rol': 'veterinario'}`
+- [ ] `Mascota.fecha_nacimiento` no puede ser futura (validado en `clean()`)
+- [ ] No se acepta `foto` sin validar tipo de archivo (Pillow maneja esto en producción)
+
+### Configuración
+- [ ] `SECRET_KEY` viene de variable de entorno, no hardcodeada
+- [ ] Credenciales de BD vienen de `.env`, nunca en `settings.py`
+- [ ] `.env` está en `.gitignore`
+
+## Formato de reporte
+Para cada ítem:
+- **OK** — si está correctamente implementado
+- **PROBLEMA** — con archivo, número de línea y descripción del riesgo
+- **FIX SUGERIDO** — código concreto para corregirlo
+
+## Entregables
+- Reporte completo del checklist
+- Si hay vulnerabilidades: propuesta de fix con código
