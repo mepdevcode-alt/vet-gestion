@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Entorno virtual
+venv/
+env/
+
+# Variables de entorno (contiene secretos)
+.env
+
+# Base de datos local
+db.sqlite3
+
+# Archivos subidos por usuarios
+media/
+
+# IDE
+.vscode/
+.idea/

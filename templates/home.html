@@ -87,7 +87,7 @@
                     </div>
                 </div>
 
-                <a href="{% url 'solicitar_turno' %}" class="font-semibold text-gray-700 hover:text-panda-700 transition-colors">SOLICITAR TURNO</a>
+                <a href="{% url 'turnos:solicitar' %}" class="font-semibold text-gray-700 hover:text-panda-700 transition-colors">SOLICITAR TURNO</a>
             </nav>
 
             <!-- CTAs desktop -->
@@ -111,7 +111,7 @@
     <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100">
         <div class="px-4 py-4 space-y-2">
             <a href="#servicios" class="block py-2 font-semibold text-gray-700">SERVICIOS</a>
-            <a href="{% url 'solicitar_turno' %}" class="block py-2 font-semibold text-gray-700">SOLICITAR TURNO</a>
+            <a href="{% url 'turnos:solicitar' %}" class="block py-2 font-semibold text-gray-700">SOLICITAR TURNO</a>
             <a href="{% url 'login' %}" class="block py-2 font-semibold text-gray-700">INICIAR SESIÓN</a>
             <a href="#urgencias" class="block w-full bg-panda-700 text-white text-center font-bold py-2.5 rounded-lg mt-2">🚨 URGENCIAS 24 HS</a>
         </div>
@@ -145,7 +145,7 @@
 
                 <!-- CTAs -->
                 <div class="flex flex-wrap gap-3 pt-2">
-                    <a href="{% url 'solicitar_turno' %}" class="bg-panda-700 hover:bg-panda-800 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-panda-200">
+                    <a href="{% url 'turnos:solicitar' %}" class="bg-panda-700 hover:bg-panda-800 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-panda-200">
                         📅 PEDIR TURNO
                     </a>
                     <a href="#urgencias" class="border-2 border-panda-700 text-panda-700 hover:bg-panda-700 hover:text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center gap-2">
@@ -589,7 +589,7 @@
                 <p class="text-sm text-gray-400 mb-4 leading-relaxed">
                     Agenda online de forma rápida y sencilla.
                 </p>
-                <a href="{% url 'solicitar_turno' %}" class="block w-full bg-panda-700 hover:bg-panda-600 text-white font-bold text-center py-3 rounded-xl transition-colors mb-3">
+                <a href="{% url 'turnos:solicitar' %}" class="block w-full bg-panda-700 hover:bg-panda-600 text-white font-bold text-center py-3 rounded-xl transition-colors mb-3">
                     📅 PEDI TU TURNO
                 </a>
                 <a href="{% url 'login' %}" class="block w-full border border-gray-600 hover:border-panda-400 text-gray-300 hover:text-panda-400 font-medium text-center py-3 rounded-xl transition-colors text-sm">
