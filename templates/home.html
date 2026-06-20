@@ -174,7 +174,7 @@
             <div class="relative flex justify-center lg:justify-end">
                 <div class="relative">
                     <div class="absolute inset-0 bg-panda-200 rounded-3xl rotate-3 scale-105 opacity-40"></div>
-                    <img src="{% static 'assets/MASCOTA.jpeg' %}"
+                    <img src="{% static 'assets/landing.png' %}"
                          alt="Mascotas felices en VetGestión"
                          class="relative rounded-3xl shadow-2xl w-full max-w-md object-cover">
                 </div>
@@ -262,50 +262,55 @@
 
 
 <!-- =========================================================
-     CEO SECTION — CONOCÉ A PITY
+     ¿POR QUÉ ELEGIRNOS?
      ========================================================= -->
 <section class="bg-panda-50 py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
 
-            <!-- Imagen + título -->
-            <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center gap-8">
-                <div class="flex-shrink-0">
-                    <img src="{% static 'assets/icono-vetgestion.jpeg' %}"
-                         alt="Mascota de VetGestión"
-                         class="w-48 h-48 sm:w-56 sm:h-56 object-cover rounded-2xl drop-shadow-xl">
-                </div>
-                <div>
-                    <h2 class="text-3xl sm:text-4xl font-black text-gray-900 leading-tight">
-                        CONOCÉ A PITY,<br>
-                        NUESTRO CEO 🐾
-                    </h2>
-                    <p class="mt-4 text-gray-600 leading-relaxed">
-                        Pity no es solo nuestra mascota, es el corazón de VetGestión.
-                        Con su espíritu tierno y amor incondicional, nos inspira
-                        cada día a brindar el mejor cuidado para tu compañero
-                        de vida. En VetGestión creemos que cada mascota merece
-                        respeto, dedicación y una atención de excelencia.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Quote -->
-            <div class="bg-white rounded-3xl p-8 shadow-lg border border-panda-100">
-                <div class="text-6xl text-panda-200 font-serif leading-none mb-4">"</div>
-                <p class="text-xl text-gray-700 italic font-medium leading-relaxed">
-                    En VetGestión más que tratar mascotas, construimos
-                    vínculos para toda la vida.
-                </p>
-                <div class="mt-6 flex items-center gap-3">
-                    <img src="{% static 'assets/icono-vetgestion.jpeg' %}" alt="Pity" class="w-12 h-12 rounded-full object-cover">
-                    <div>
-                        <div class="font-bold text-gray-800">Pity</div>
-                        <div class="text-sm text-panda-600">CEO & Mascota Oficial</div>
-                    </div>
-                </div>
-            </div>
+        <div class="text-center mb-12">
+            <h2 class="text-3xl sm:text-4xl font-black text-gray-900 mb-3">¿Por qué elegirnos?</h2>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">Más de tres décadas cuidando a las mascotas de tu familia con profesionalismo, tecnología y amor.</p>
         </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- Card 1 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-panda-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4" style="background-color:#DBEAFE;">🏆</div>
+                <h3 class="font-black text-gray-900 text-lg mb-2">+30 años de experiencia</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Décadas acompañando a familias y sus mascotas con el mismo compromiso desde el primer día.</p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-panda-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4" style="background-color:#DBEAFE;">🔬</div>
+                <h3 class="font-black text-gray-900 text-lg mb-2">Tecnología de vanguardia</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Equipamiento de diagnóstico de última generación: laboratorio propio, ecografía, radiografía digital y más.</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-panda-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4" style="background-color:#DBEAFE;">🚑</div>
+                <h3 class="font-black text-gray-900 text-lg mb-2">Guardia 24 horas</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Emergencias veterinarias sin importar la hora. Nuestro equipo está disponible todos los días del año.</p>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-panda-100 hover:shadow-md transition-shadow">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4" style="background-color:#DBEAFE;">👨‍⚕️</div>
+                <h3 class="font-black text-gray-900 text-lg mb-2">Equipo especializado</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Veterinarios especializados en distintas áreas para que tu mascota reciba la atención que merece.</p>
+            </div>
+
+        </div>
+
+        <!-- CTA central -->
+        <div class="mt-10 text-center">
+            <a href="{% url 'solicitar_turno' %}" class="inline-flex items-center gap-2 text-white font-bold px-8 py-3.5 rounded-xl transition-colors shadow-lg" style="background-color:#1E3A5F;" onmouseover="this.style.backgroundColor='#1B4B82'" onmouseout="this.style.backgroundColor='#1E3A5F'">
+                📅 Pedí tu turno ahora
+            </a>
+        </div>
+
     </div>
 </section>
 
@@ -466,7 +471,7 @@
 
             <!-- Sucursal Escobar -->
             <div class="rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <img src="{% static 'assets/MASCOTA.jpeg' %}" alt="Sucursal Escobar" class="w-full h-36 object-cover">
+                <img src="{% static 'assets/landing.png' %}" alt="Sucursal Escobar" class="w-full h-36 object-cover">
                 <div class="p-5">
                     <h3 class="font-black text-gray-900 text-lg mb-1">SUCURSAL ESCOBAR</h3>
                     <p class="text-gray-500 text-sm mb-3">Colectora Este 1234<br>Belén de Escobar</p>
