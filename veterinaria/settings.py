@@ -68,17 +68,19 @@ if MODO_BD == 'postgres':
         }
     }
 elif MODO_BD == 'mssql':
+    _mssql_usuario = os.getenv('MSSQL_USUARIO', '')
+    _mssql_extra = 'TrustServerCertificate=yes' + (';Trusted_Connection=yes' if not _mssql_usuario else '')
     DATABASES = {
         'default': {
             'ENGINE': 'mssql',
             'NAME': os.getenv('MSSQL_NOMBRE', 'veterinaria'),
-            'USER': os.getenv('MSSQL_USUARIO', 'sa'),
-            'PASSWORD': os.getenv('MSSQL_CONTRASENA'),
+            'USER': _mssql_usuario,
+            'PASSWORD': os.getenv('MSSQL_CONTRASENA', ''),
             'HOST': os.getenv('MSSQL_HOST', '127.0.0.1'),
             'PORT': os.getenv('MSSQL_PUERTO', '1433'),
             'OPTIONS': {
                 'driver': 'ODBC Driver 17 for SQL Server',
-                'extra_params': 'TrustServerCertificate=yes',
+                'extra_params': _mssql_extra,
             },
         }
     }
@@ -117,3 +119,8 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/usuarios/login/'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# Mercado Pago
+MP_ACCESS_TOKEN = os.getenv('MP_ACCESS_TOKEN', '')
+MP_PUBLIC_KEY = os.getenv('MP_PUBLIC_KEY', '')
+MP_WEBHOOK_URL = os.getenv('MP_WEBHOOK_URL', '')
