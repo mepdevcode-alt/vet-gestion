@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Historia Clínica {{ hc.numero_hc }}</title>
+  <style>
+    @page { size: A4; margin: 1.8cm 1.5cm; }
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #1e293b; }
+
+    .header { border-bottom: 2px solid #0284c7; padding-bottom: 8px; margin-bottom: 12px; }
+    .header-top { display: block; margin-bottom: 4px; }
+    .clinic-name { font-size: 16pt; font-weight: bold; color: #0284c7; }
+    .hc-number  { font-size: 13pt; font-weight: bold; color: #0f172a; float: right; margin-top: -20px; }
+    .meta-line  { font-size: 8pt; color: #64748b; margin-top: 2px; }
+
+    .section { margin-bottom: 10px; }
+    .section-title {
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 8pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 6px;
+      margin-bottom: 5px;
+    }
+    .two-col { display: block; }
+    .col-half { display: inline-block; vertical-align: top; width: 49%; }
+    .field { margin-bottom: 4px; }
+    .field-label { font-size: 7.5pt; color: #64748b; display: block; }
+    .field-value { font-size: 9pt; color: #0f172a; }
+
+    .vitals-box { background: #f0f9ff; border: 1px solid #bae6fd; padding: 5px 8px; margin-bottom: 8px; }
+    .vital-item { display: inline-block; width: 23%; text-align: center; vertical-align: top; }
+    .vital-label { font-size: 7pt; color: #0369a1; display: block; }
+    .vital-value { font-size: 11pt; font-weight: bold; color: #0f172a; }
+
+    .badge-activa  { color: #15803d; font-weight: bold; }
+    .badge-cerrada { color: #6b7280; font-weight: bold; }
+
+    .footer { border-top: 1px solid #e2e8f0; margin-top: 16px; padding-top: 6px; font-size: 7.5pt; color: #94a3b8; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-top">
+      <span class="clinic-name">VetGestión</span>
+      <span class="hc-number">{{ hc.numero_hc }}</span>
+    </div>
+    <div class="meta-line">
+      Creada: {{ hc.fecha_creacion|date:"d/m/Y H:i" }} &nbsp;|&nbsp;
+      Última actualización: {{ hc.fecha_actualizacion|date:"d/m/Y H:i" }} &nbsp;|&nbsp;
+      Estado: {% if hc.estado == 'activa' %}<span class="badge-activa">Activa</span>{% else %}<span class="badge-cerrada">Cerrada</span>{% endif %}
+    </div>
+  </div>
+
+  <!-- Propietario + Paciente -->
+  <div class="section">
+    <div class="section-title">1. Propietario</div>
+    <div class="two-col">
+      <div class="col-half">
+        <div class="field"><span class="field-label">Nombre</span><span class="field-value">{{ hc.propietario_nombre }}</span></div>
+        <div class="field"><span class="field-label">Documento</span><span class="field-value">{{ hc.propietario_documento|default:"—" }}</span></div>
+        <div class="field"><span class="field-label">Teléfono</span><span class="field-value">{{ hc.propietario_telefono|default:"—" }}</span></div>
+      </div>
+      <div class="col-half">
+        <div class="field"><span class="field-label">Email</span><span class="field-value">{{ hc.propietario_email|default:"—" }}</span></div>
+        <div class="field"><span class="field-label">Dirección</span><span class="field-value">{{ hc.propietario_direccion|default:"—" }}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">2. Paciente</div>
+    <div class="two-col">
+      <div class="col-half">
+        <div class="field"><span class="field-label">Nombre</span><span class="field-value">{{ hc.mascota.nombre }}</span></div>
+        <div class="field"><span class="field-label">Especie / Raza</span><span class="field-value">{{ hc.mascota.get_especie_display }} / {{ hc.mascota.raza|default:"—" }}</span></div>
+        <div class="field"><span class="field-label">Sexo</span><span class="field-value">{{ hc.get_paciente_sexo_display }}</span></div>
+        <div class="field"><span class="field-label">Esterilizado</span><span class="field-value">{% if hc.esterilizado %}Sí{% else %}No{% endif %}</span></div>
+      </div>
+      <div class="col-half">
+        <div class="field"><span class="field-label">Color / Pelaje</span><span class="field-value">{{ hc.paciente_color_pelaje|default:"—" }}</span></div>
+        <div class="field"><span class="field-label">Microchip</span><span class="field-value">{{ hc.paciente_microchip|default:"—" }}</span></div>
+        <div class="field"><span class="field-label">Procedencia</span><span class="field-value">{{ hc.paciente_procedencia|default:"—" }}</span></div>
+        {% if hc.paciente_senas_particulares %}<div class="field"><span class="field-label">Señas particulares</span><span class="field-value">{{ hc.paciente_senas_particulares }}</span></div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Anamnesis -->
+  <div class="section">
+    <div class="section-title">3. Anamnesis</div>
+    <div class="field"><span class="field-label">Motivo de consulta</span><span class="field-value">{{ hc.motivo_consulta }}</span></div>
+    <div class="two-col" style="margin-top:4px;">
+      <div class="col-half">
+        {% if hc.dieta %}<div class="field"><span class="field-label">Dieta</span><span class="field-value">{{ hc.dieta }}</span></div>{% endif %}
+        {% if hc.enfermedades_previas %}<div class="field"><span class="field-label">Enfermedades previas</span><span class="field-value">{{ hc.enfermedades_previas }}</span></div>{% endif %}
+        {% if hc.medicacion_actual %}<div class="field"><span class="field-label">Medicación actual</span><span class="field-value">{{ hc.medicacion_actual }}</span></div>{% endif %}
+        {% if hc.cirugias_previas %}<div class="field"><span class="field-label">Cirugías previas</span><span class="field-value">{{ hc.cirugias_previas }}</span></div>{% endif %}
+      </div>
+      <div class="col-half">
+        {% if hc.vacunacion %}<div class="field"><span class="field-label">Vacunación</span><span class="field-value">{{ hc.vacunacion }}</span></div>{% endif %}
+        {% if hc.desparasitacion %}<div class="field"><span class="field-label">Desparasitación</span><span class="field-value">{{ hc.desparasitacion }}</span></div>{% endif %}
+        {% if hc.partos %}<div class="field"><span class="field-label">Partos</span><span class="field-value">{{ hc.partos }}</span></div>{% endif %}
+        {% if hc.observaciones_anamnesis %}<div class="field"><span class="field-label">Observaciones</span><span class="field-value">{{ hc.observaciones_anamnesis }}</span></div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Examen Clínico -->
+  <div class="section">
+    <div class="section-title">4. Examen Clínico</div>
+    <div class="vitals-box">
+      <div class="vital-item">
+        <span class="vital-label">Temperatura</span>
+        <span class="vital-value">{{ hc.temperatura|default:"—" }}{% if hc.temperatura %} °C{% endif %}</span>
+      </div>
+      <div class="vital-item">
+        <span class="vital-label">FC (lpm)</span>
+        <span class="vital-value">{{ hc.frecuencia_cardiaca|default:"—" }}</span>
+      </div>
+      <div class="vital-item">
+        <span class="vital-label">FR (rpm)</span>
+        <span class="vital-value">{{ hc.frecuencia_respiratoria|default:"—" }}</span>
+      </div>
+      <div class="vital-item">
+        <span class="vital-label">Peso (kg)</span>
+        <span class="vital-value">{{ hc.peso_actual|default:"—" }}</span>
+      </div>
+    </div>
+    {% if hc.diagnostico_presuntivo %}<div class="field"><span class="field-label">Diagnóstico presuntivo</span><span class="field-value">{{ hc.diagnostico_presuntivo }}</span></div>{% endif %}
+    <div class="field"><span class="field-label">Diagnóstico definitivo</span><span class="field-value" style="font-weight:bold;">{{ hc.diagnostico_definitivo }}</span></div>
+    <div class="field"><span class="field-label">Tratamiento</span><span class="field-value">{{ hc.tratamiento }}</span></div>
+    {% if hc.medicacion_prescrita %}<div class="field"><span class="field-label">Medicación prescrita</span><span class="field-value">{{ hc.medicacion_prescrita }}</span></div>{% endif %}
+    {% if hc.observaciones_clinicas %}<div class="field"><span class="field-label">Observaciones clínicas</span><span class="field-value">{{ hc.observaciones_clinicas }}</span></div>{% endif %}
+  </div>
+
+  <!-- Seguimiento -->
+  <div class="section">
+    <div class="section-title">5. Seguimiento</div>
+    <div class="two-col">
+      <div class="col-half">
+        <div class="field"><span class="field-label">Veterinario responsable</span><span class="field-value">{{ hc.veterinario_responsable.get_full_name|default:hc.veterinario_responsable.username|default:"—" }}</span></div>
+        <div class="field"><span class="field-label">Próxima visita</span><span class="field-value">{{ hc.proxima_visita|date:"d/m/Y"|default:"—" }}</span></div>
+      </div>
+      <div class="col-half">
+        {% if hc.evolucion %}<div class="field"><span class="field-label">Evolución</span><span class="field-value">{{ hc.evolucion }}</span></div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Firma -->
+  <div style="margin-top: 24px; padding-top: 8px; border-top: 1px solid #cbd5e1;">
+    <div style="display: inline-block; width: 45%; text-align: center; margin-right: 5%;">
+      <div style="border-top: 1px solid #0f172a; margin-top: 30px; padding-top: 4px; font-size: 8pt; color: #334155;">Firma del Veterinario</div>
+    </div>
+    <div style="display: inline-block; width: 45%; text-align: center;">
+      <div style="border-top: 1px solid #0f172a; margin-top: 30px; padding-top: 4px; font-size: 8pt; color: #334155;">Aclaración</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    VetGestión — Generado el {{ hc.fecha_actualizacion|date:"d/m/Y H:i" }} — {{ hc.numero_hc }}
+  </div>
+
+</body>
+</html>

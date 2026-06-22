@@ -36,10 +36,115 @@
         .hero-gradient {
             background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 50%, #fff 100%);
         }
-        .dropdown:hover .dropdown-menu { display: block; }
-        .service-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(109,40,217,0.15); }
-        .service-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .dropdown-menu { display: none; }
+        .service-card { transition: transform 0.2s ease; }
+        .service-card:hover { transform: translateY(-4px); }
+
+        /* GlowCard */
+        [data-glow] {
+            --border-size: calc(var(--border, 3) * 1px);
+            --spotlight-size: calc(var(--size, 200) * 1px);
+            --hue: calc(var(--base, 220) + (var(--xp, 0) * var(--spread, 200)));
+            background-image: radial-gradient(
+                var(--spotlight-size) var(--spotlight-size) at
+                calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+                hsl(var(--hue) 100% 70% / 0.1), transparent
+            );
+            background-color: hsl(0 0% 60% / 0.08);
+            background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
+            background-position: 50% 50%;
+            background-attachment: fixed;
+            border: var(--border-size) solid hsl(0 0% 60% / 0.12);
+            border-radius: calc(var(--radius, 14) * 1px);
+            position: relative;
+        }
+        [data-glow]::before,
+        [data-glow]::after {
+            pointer-events: none;
+            content: "";
+            position: absolute;
+            inset: calc(var(--border-size) * -1);
+            border: var(--border-size) solid transparent;
+            border-radius: calc(var(--radius, 14) * 1px);
+            background-attachment: fixed;
+            background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+            mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+            mask-clip: padding-box, border-box;
+            mask-composite: intersect;
+            -webkit-mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+            -webkit-mask-clip: padding-box, border-box;
+            -webkit-mask-composite: destination-in;
+        }
+        [data-glow]::before {
+            background-image: radial-gradient(
+                calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
+                calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+                hsl(var(--hue) 100% 50% / 1), transparent 100%
+            );
+            filter: brightness(2);
+        }
+        [data-glow]::after {
+            background-image: radial-gradient(
+                calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
+                calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+                hsl(0 100% 100% / 1), transparent 100%
+            );
+        }
+        [data-glow] > [data-glow] {
+            position: absolute;
+            inset: 0;
+            will-change: filter;
+            opacity: var(--outer, 1);
+            border-radius: calc(var(--radius, 14) * 1px);
+            filter: blur(calc(var(--border-size) * 10));
+            background: none;
+            pointer-events: none;
+            border: none;
+        }
+        [data-glow] > [data-glow]::before {
+            inset: -10px;
+            border-width: 10px;
+        }
         .star { color: #f59e0b; }
+
+        @keyframes draw-footer-text {
+            from { stroke-dashoffset: 1000; }
+            to   { stroke-dashoffset: 0; }
+        }
+
+        @keyframes border-orbit {
+            from { offset-distance: 0%; }
+            to   { offset-distance: 100%; }
+        }
+        .btn-border-anim {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-border-anim .anim-border {
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            border: 2px solid transparent;
+            pointer-events: none;
+            mask-clip: padding-box, border-box;
+            mask-composite: intersect;
+            mask-image: linear-gradient(transparent, transparent), linear-gradient(#000, #000);
+            -webkit-mask-clip: padding-box, border-box;
+            -webkit-mask-composite: destination-in;
+            -webkit-mask-image: linear-gradient(transparent, transparent), linear-gradient(#000, #000);
+        }
+        .btn-border-anim .anim-dot {
+            position: absolute;
+            width: 20px;
+            aspect-ratio: 1;
+            background: linear-gradient(to right, transparent, #1B4B82);
+            offset-path: rect(0 auto auto 0 round 8px);
+            animation: border-orbit 5s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-900">
@@ -92,7 +197,10 @@
 
             <!-- CTAs desktop -->
             <div class="hidden md:flex items-center gap-3">
-                <a href="{% url 'login' %}" class="text-sm font-medium text-gray-600 hover:text-panda-700 transition-colors">Iniciar sesión</a>
+                <a href="{% url 'login' %}" class="btn-border-anim text-sm font-medium text-gray-700 hover:text-panda-700 transition-colors border border-gray-300 px-4 py-2 rounded-lg">
+                    <div class="anim-border"><div class="anim-dot"></div></div>
+                    Iniciar sesión
+                </a>
                 <a href="#urgencias" class="bg-panda-700 hover:bg-panda-800 text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2">
                     🚨 URGENCIAS 24 HS
                 </a>
@@ -197,7 +305,7 @@
 <!-- =========================================================
      GRILLA DE SERVICIOS
      ========================================================= -->
-<section id="servicios" class="bg-white py-20">
+<section id="servicios" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-3xl sm:text-4xl font-black text-gray-900 mb-3">Nuestros Servicios</h2>
@@ -205,57 +313,136 @@
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {% with servicios=servicios_grid %}
 
             <!-- Cirugías 24 HS -->
-            <div class="service-card bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 text-center cursor-pointer border border-red-100">
-                <div class="text-4xl mb-3">🔪</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">CIRUGÍAS<br>24 HS</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:0; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-red-400">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full">
+                            <path d="M10 2h4v8h8v4h-8v8h-4v-8H2v-4h8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">CIRUGÍAS<br>24 HS</h3>
+                </div>
             </div>
 
             <!-- Clínica Médica -->
-            <div class="service-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center cursor-pointer border border-blue-100">
-                <div class="text-4xl mb-3">🏥</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">CLÍNICA<br>MÉDICA</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:200; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-cyan-400">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">CLÍNICA<br>MÉDICA</h3>
+                </div>
             </div>
 
             <!-- Guardia e Internación -->
-            <div class="service-card bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 text-center cursor-pointer border border-orange-100">
-                <div class="text-4xl mb-3">🛏️</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">GUARDIA E<br>INTERNACIÓN</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:30; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-orange-400">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                            <path d="M12 2L4 5v6c0 5.5 3.5 10 8 12 4.5-2 8-6.5 8-12V5z"/>
+                            <path d="M12 8v8M8 12h8"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">GUARDIA E<br>INTERNACIÓN</h3>
+                </div>
             </div>
 
             <!-- Laboratorio e Imágenes -->
-            <div class="service-card bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl p-6 text-center cursor-pointer border border-teal-100">
-                <div class="text-4xl mb-3">🔬</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">LABORATORIO<br>E IMÁGENES</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:175; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-teal-400">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                            <path d="M9 3v7L5 18h14l-4-8V3z"/>
+                            <path d="M9 3h6"/>
+                            <path d="M7 13h10"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">LABORATORIO<br>E IMÁGENES</h3>
+                </div>
             </div>
 
             <!-- Especialidades Veterinarias -->
-            <div class="service-card bg-gradient-to-br from-purple-50 to-panda-100 rounded-2xl p-6 text-center cursor-pointer border border-panda-100">
-                <div class="text-4xl mb-3">⭐</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">ESPECIALIDADES<br>VETERINARIAS</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:270; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-purple-400">
+                        <svg viewBox="0 0 24 24" class="w-full h-full">
+                            <circle cx="12" cy="13.5" r="4" fill="currentColor"/>
+                            <circle cx="8.5" cy="8" r="2" fill="currentColor"/>
+                            <circle cx="15.5" cy="8" r="2" fill="currentColor"/>
+                            <circle cx="5.5" cy="12.5" r="1.5" fill="currentColor"/>
+                            <circle cx="18.5" cy="12.5" r="1.5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">ESPECIALIDADES<br>VETERINARIAS</h3>
+                </div>
             </div>
 
             <!-- Peluquería Canina y Felina -->
-            <div class="service-card bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-6 text-center cursor-pointer border border-pink-100">
-                <div class="text-4xl mb-3">✂️</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">PELUQUERÍA<br>CANINA Y FELINA</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:330; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-pink-400">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                            <circle cx="6" cy="6" r="3"/>
+                            <circle cx="6" cy="18" r="3"/>
+                            <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+                            <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+                            <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">PELUQUERÍA<br>CANINA Y FELINA</h3>
+                </div>
             </div>
 
             <!-- Farmacia y Petshop -->
-            <div class="service-card bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center cursor-pointer border border-green-100">
-                <div class="text-4xl mb-3">💊</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">FARMACIA<br>Y PETSHOP</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:140; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-green-400">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                            <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+                            <line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">FARMACIA<br>Y PETSHOP</h3>
+                </div>
             </div>
 
             <!-- Exóticos y No Tradicionales -->
-            <div class="service-card bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-6 text-center cursor-pointer border border-yellow-100">
-                <div class="text-4xl mb-3">🦜</div>
-                <h3 class="font-bold text-gray-800 text-sm leading-tight">EXÓTICOS Y<br>NO TRADICIONALES</h3>
+            <div data-glow class="service-card rounded-2xl p-6 text-center cursor-pointer"
+                 style="--base:50; --spread:200; --radius:16; --border:2; --size:220;">
+                <div data-glow></div>
+                <div class="relative z-10 flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 mx-auto text-yellow-400">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
+                            <path d="M16 7h.01"/>
+                            <path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20"/>
+                            <path d="m20 7 2 .5-2 .5"/>
+                            <path d="M10 18v3"/>
+                            <path d="M14 17.75V21"/>
+                            <path d="M7 18a6 6 0 0 0 3.84-10.61"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-sm leading-tight">EXÓTICOS Y<br>NO TRADICIONALES</h3>
+                </div>
             </div>
 
-            {% endwith %}
         </div>
     </div>
 </section>
@@ -306,7 +493,7 @@
 
         <!-- CTA central -->
         <div class="mt-10 text-center">
-            <a href="{% url 'solicitar_turno' %}" class="inline-flex items-center gap-2 text-white font-bold px-8 py-3.5 rounded-xl transition-colors shadow-lg" style="background-color:#1E3A5F;" onmouseover="this.style.backgroundColor='#1B4B82'" onmouseout="this.style.backgroundColor='#1E3A5F'">
+            <a href="{% url 'turnos:solicitar' %}" class="inline-flex items-center gap-2 text-white font-bold px-8 py-3.5 rounded-xl transition-colors shadow-lg" style="background-color:#1E3A5F;" onmouseover="this.style.backgroundColor='#1B4B82'" onmouseout="this.style.backgroundColor='#1E3A5F'">
                 📅 Pedí tu turno ahora
             </a>
         </div>
@@ -532,8 +719,52 @@
 <!-- =========================================================
      FOOTER
      ========================================================= -->
-<footer class="bg-gray-900 text-gray-300 py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<footer class="relative text-gray-300 overflow-hidden" style="background: #0f1f3d;">
+
+    <!-- Background gradient overlay -->
+    <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(125% 125% at 50% 10%, #0F0F1166 50%, #3ca2fa33 100%);"></div>
+
+    <!-- SVG Text Hero -->
+    <div class="relative z-10 max-w-5xl mx-auto px-4 pt-12" style="height: 150px;">
+        <svg id="footer-text-svg" width="100%" height="100%" viewBox="0 0 300 100"
+             xmlns="http://www.w3.org/2000/svg" style="cursor:pointer; user-select:none;">
+            <defs>
+                <linearGradient id="footerTextGradient" gradientUnits="userSpaceOnUse" x1="0" y1="50" x2="300" y2="50">
+                </linearGradient>
+                <radialGradient id="footerRevealGradient" gradientUnits="userSpaceOnUse" r="60" cx="150" cy="50">
+                    <stop offset="0%" stop-color="white" />
+                    <stop offset="100%" stop-color="black" />
+                </radialGradient>
+                <mask id="footerTextMask">
+                    <rect x="0" y="0" width="100%" height="100%" fill="url(#footerRevealGradient)" />
+                </mask>
+            </defs>
+            <!-- Outline base text (visible on hover) -->
+            <text id="footer-txt-base" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+                  stroke="#3a3a3a" stroke-width="0.3" fill="transparent"
+                  style="font-family:helvetica,sans-serif; font-size:28px; font-weight:bold; text-transform:uppercase; opacity:0; transition:opacity 0.3s;">
+                VetGestión
+            </text>
+            <!-- Animated draw-on text -->
+            <text id="footer-txt-draw" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+                  stroke="#3ca2fa" stroke-width="0.3" fill="transparent"
+                  style="font-family:helvetica,sans-serif; font-size:28px; font-weight:bold; text-transform:uppercase; stroke-dasharray:1000; stroke-dashoffset:1000; animation: draw-footer-text 4s ease-in-out forwards;">
+                VetGestión
+            </text>
+            <!-- Gradient reveal text (follows cursor) -->
+            <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+                  stroke="url(#footerTextGradient)" stroke-width="0.3" fill="transparent"
+                  mask="url(#footerTextMask)"
+                  style="font-family:helvetica,sans-serif; font-size:28px; font-weight:bold; text-transform:uppercase;">
+                VetGestión
+            </text>
+        </svg>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div class="border-t border-gray-800 mb-12"></div>
+
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
 
             <!-- Logo + descripción -->
@@ -548,15 +779,37 @@
                 <p class="text-sm text-gray-400 leading-relaxed">
                     Más de 30 años cuidando a quienes más querés.
                 </p>
-                <!-- Social icons -->
                 <div class="flex gap-3 mt-4">
-                    <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-panda-700 flex items-center justify-center transition-colors text-lg">📘</a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-panda-700 flex items-center justify-center transition-colors text-lg">📷</a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-panda-700 flex items-center justify-center transition-colors text-lg">💬</a>
+                    <!-- Instagram -->
+                    <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-panda-700 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </a>
+                    <!-- X (Twitter) -->
+                    <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-panda-700 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                    </a>
+                    <!-- Facebook -->
+                    <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-panda-700 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </a>
+                    <!-- Web -->
+                    <a href="#" class="w-9 h-9 rounded-full bg-gray-800 hover:bg-panda-700 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
 
-            <!-- Enlace rápidos -->
+            <!-- Enlaces rápidos -->
             <div>
                 <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wide">ENLACES RÁPIDOS</h4>
                 <ul class="space-y-2 text-sm">
@@ -591,17 +844,10 @@
             <!-- CTA -->
             <div>
                 <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wide">AGENDÁ TU VISITA</h4>
-                <p class="text-sm text-gray-400 mb-4 leading-relaxed">
-                    Agenda online de forma rápida y sencilla.
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    Encontranos en 3 sucursales o contactanos por WhatsApp para consultas rápidas.
                 </p>
-                <a href="{% url 'turnos:solicitar' %}" class="block w-full bg-panda-700 hover:bg-panda-600 text-white font-bold text-center py-3 rounded-xl transition-colors mb-3">
-                    📅 PEDI TU TURNO
-                </a>
-                <a href="{% url 'login' %}" class="block w-full border border-gray-600 hover:border-panda-400 text-gray-300 hover:text-panda-400 font-medium text-center py-3 rounded-xl transition-colors text-sm">
-                    Iniciar sesión
-                </a>
             </div>
-
         </div>
 
         <!-- Bottom bar -->
@@ -625,6 +871,73 @@
         const menu = document.getElementById('mobile-menu');
         menu.classList.toggle('hidden');
     });
+
+    // Dropdown servicios — con delay para evitar cierre accidental
+    (function () {
+        var dropdown = document.querySelector('.dropdown');
+        var menu = dropdown && dropdown.querySelector('.dropdown-menu');
+        if (!dropdown || !menu) return;
+        var closeTimer = null;
+
+        function open() {
+            clearTimeout(closeTimer);
+            menu.style.display = 'block';
+        }
+        function scheduleClose() {
+            closeTimer = setTimeout(function () {
+                menu.style.display = 'none';
+            }, 150);
+        }
+
+        dropdown.addEventListener('mouseenter', open);
+        dropdown.addEventListener('mouseleave', scheduleClose);
+        menu.addEventListener('mouseenter', open);
+        menu.addEventListener('mouseleave', scheduleClose);
+    })();
+
+    // GlowCard pointer tracking
+    document.addEventListener('pointermove', function(e) {
+        var x = e.clientX.toFixed(2);
+        var xp = (e.clientX / window.innerWidth).toFixed(2);
+        var y = e.clientY.toFixed(2);
+        document.querySelectorAll('[data-glow]').forEach(function(el) {
+            el.style.setProperty('--x', x);
+            el.style.setProperty('--xp', xp);
+            el.style.setProperty('--y', y);
+        });
+    });
+
+    // Footer text hover effect
+    (function () {
+        const svg = document.getElementById('footer-text-svg');
+        if (!svg) return;
+        const base = document.getElementById('footer-txt-base');
+        const gradient = document.getElementById('footerTextGradient');
+        const revealGrad = document.getElementById('footerRevealGradient');
+
+        svg.addEventListener('mouseenter', function () {
+            base.style.opacity = '0.7';
+            gradient.innerHTML =
+                '<stop offset="0%" stop-color="#eab308"/>' +
+                '<stop offset="25%" stop-color="#ef4444"/>' +
+                '<stop offset="50%" stop-color="#80eeb4"/>' +
+                '<stop offset="75%" stop-color="#06b6d4"/>' +
+                '<stop offset="100%" stop-color="#8b5cf6"/>';
+        });
+        svg.addEventListener('mouseleave', function () {
+            base.style.opacity = '0';
+            gradient.innerHTML = '';
+            revealGrad.setAttribute('cx', '150');
+            revealGrad.setAttribute('cy', '50');
+        });
+        svg.addEventListener('mousemove', function (e) {
+            const rect = svg.getBoundingClientRect();
+            const cx = ((e.clientX - rect.left) / rect.width) * 300;
+            const cy = ((e.clientY - rect.top) / rect.height) * 100;
+            revealGrad.setAttribute('cx', cx);
+            revealGrad.setAttribute('cy', cy);
+        });
+    })();
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {

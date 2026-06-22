@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} — VetGestión{% endblock %}
+
+{% block extra_css %}
+<style>
+  .tab-btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <div class="mb-6">
+    <a href="{% url 'hc_lista' %}" class="text-sm text-sky-600 hover:underline">← Volver a Historias Clínicas</a>
+    <h1 class="text-2xl font-bold text-gray-900 mt-2">{{ titulo }}</h1>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex flex-wrap gap-2 mb-6 border-b border-sky-100 pb-3">
+    <button type="button" data-tab="1" class="tab-btn active px-4 py-1.5 rounded-full border border-sky-300 text-sky-700 text-sm font-medium transition hover:bg-sky-50">1. Propietario</button>
+    <button type="button" data-tab="2" class="tab-btn px-4 py-1.5 rounded-full border border-sky-300 text-sky-700 text-sm font-medium transition hover:bg-sky-50">2. Paciente</button>
+    <button type="button" data-tab="3" class="tab-btn px-4 py-1.5 rounded-full border border-sky-300 text-sky-700 text-sm font-medium transition hover:bg-sky-50">3. Anamnesis</button>
+    <button type="button" data-tab="4" class="tab-btn px-4 py-1.5 rounded-full border border-sky-300 text-sky-700 text-sm font-medium transition hover:bg-sky-50">4. Examen Clínico</button>
+    <button type="button" data-tab="5" class="tab-btn px-4 py-1.5 rounded-full border border-sky-300 text-sky-700 text-sm font-medium transition hover:bg-sky-50">5. Seguimiento</button>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <!-- SECCIÓN 1: Propietario -->
+    <div class="tab-section active" data-section="1">
+      <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-6 mb-4">
+        <h2 class="text-base font-semibold text-sky-800 mb-4 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs font-bold flex items-center justify-center">1</span>
+          Datos del Propietario
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.propietario_nombre.label }} <span class="text-red-500">*</span></label>
+            {{ form.propietario_nombre }}
+            {% if form.propietario_nombre.errors %}<p class="text-red-500 text-xs mt-1">{{ form.propietario_nombre.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.propietario_documento.label }}</label>
+            {{ form.propietario_documento }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.propietario_telefono.label }}</label>
+            {{ form.propietario_telefono }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.propietario_email.label }}</label>
+            {{ form.propietario_email }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.propietario_direccion.label }}</label>
+            {{ form.propietario_direccion }}
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button type="button" data-next="2" class="tab-next px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-sm font-medium transition">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: Paciente -->
+    <div class="tab-section" data-section="2">
+      <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-6 mb-4">
+        <h2 class="text-base font-semibold text-sky-800 mb-4 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs font-bold flex items-center justify-center">2</span>
+          Datos del Paciente
+        </h2>
+        <div class="mb-4 p-3 bg-sky-50 rounded-lg border border-sky-100">
+          <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.mascota.label }} <span class="text-red-500">*</span></label>
+          {{ form.mascota }}
+          {% if form.mascota.errors %}<p class="text-red-500 text-xs mt-1">{{ form.mascota.errors.0 }}</p>{% endif %}
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.paciente_sexo.label }}</label>
+            {{ form.paciente_sexo }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.paciente_color_pelaje.label }}</label>
+            {{ form.paciente_color_pelaje }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.paciente_microchip.label }}</label>
+            {{ form.paciente_microchip }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.paciente_procedencia.label }}</label>
+            {{ form.paciente_procedencia }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.paciente_fin_zootecnico.label }}</label>
+            {{ form.paciente_fin_zootecnico }}
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.paciente_senas_particulares.label }}</label>
+            {{ form.paciente_senas_particulares }}
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-between">
+        <button type="button" data-next="1" class="tab-next px-5 py-2 border border-sky-300 text-sky-700 rounded-lg text-sm font-medium hover:bg-sky-50 transition">← Anterior</button>
+        <button type="button" data-next="3" class="tab-next px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-sm font-medium transition">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: Anamnesis -->
+    <div class="tab-section" data-section="3">
+      <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-6 mb-4">
+        <h2 class="text-base font-semibold text-sky-800 mb-4 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs font-bold flex items-center justify-center">3</span>
+          Anamnesis
+        </h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.motivo_consulta.label }} <span class="text-red-500">*</span></label>
+            {{ form.motivo_consulta }}
+            {% if form.motivo_consulta.errors %}<p class="text-red-500 text-xs mt-1">{{ form.motivo_consulta.errors.0 }}</p>{% endif %}
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.dieta.label }}</label>
+              {{ form.dieta }}
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.enfermedades_previas.label }}</label>
+              {{ form.enfermedades_previas }}
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.medicacion_actual.label }}</label>
+              {{ form.medicacion_actual }}
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.cirugias_previas.label }}</label>
+              {{ form.cirugias_previas }}
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.vacunacion.label }}</label>
+              {{ form.vacunacion }}
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.desparasitacion.label }}</label>
+              {{ form.desparasitacion }}
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.partos.label }}</label>
+              {{ form.partos }}
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-2">
+            {{ form.esterilizado }}
+            <label for="{{ form.esterilizado.id_for_label }}" class="text-sm text-gray-700 cursor-pointer">{{ form.esterilizado.label }}</label>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.observaciones_anamnesis.label }}</label>
+            {{ form.observaciones_anamnesis }}
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-between">
+        <button type="button" data-next="2" class="tab-next px-5 py-2 border border-sky-300 text-sky-700 rounded-lg text-sm font-medium hover:bg-sky-50 transition">← Anterior</button>
+        <button type="button" data-next="4" class="tab-next px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-sm font-medium transition">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 4: Examen Clínico -->
+    <div class="tab-section" data-section="4">
+      <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-6 mb-4">
+        <h2 class="text-base font-semibold text-sky-800 mb-4 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs font-bold flex items-center justify-center">4</span>
+          Examen Clínico
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 p-4 bg-sky-50 rounded-lg border border-sky-100">
+          <div>
+            <label class="block text-xs font-medium text-sky-700 mb-1">{{ form.temperatura.label }}</label>
+            {{ form.temperatura }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-sky-700 mb-1">{{ form.frecuencia_cardiaca.label }}</label>
+            {{ form.frecuencia_cardiaca }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-sky-700 mb-1">{{ form.frecuencia_respiratoria.label }}</label>
+            {{ form.frecuencia_respiratoria }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-sky-700 mb-1">{{ form.peso_actual.label }}</label>
+            {{ form.peso_actual }}
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.diagnostico_presuntivo.label }}</label>
+            {{ form.diagnostico_presuntivo }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.diagnostico_definitivo.label }} <span class="text-red-500">*</span></label>
+            {{ form.diagnostico_definitivo }}
+            {% if form.diagnostico_definitivo.errors %}<p class="text-red-500 text-xs mt-1">{{ form.diagnostico_definitivo.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.tratamiento.label }} <span class="text-red-500">*</span></label>
+            {{ form.tratamiento }}
+            {% if form.tratamiento.errors %}<p class="text-red-500 text-xs mt-1">{{ form.tratamiento.errors.0 }}</p>{% endif %}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.medicacion_prescrita.label }}</label>
+            {{ form.medicacion_prescrita }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.observaciones_clinicas.label }}</label>
+            {{ form.observaciones_clinicas }}
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-between">
+        <button type="button" data-next="3" class="tab-next px-5 py-2 border border-sky-300 text-sky-700 rounded-lg text-sm font-medium hover:bg-sky-50 transition">← Anterior</button>
+        <button type="button" data-next="5" class="tab-next px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-sm font-medium transition">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 5: Seguimiento -->
+    <div class="tab-section" data-section="5">
+      <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-6 mb-4">
+        <h2 class="text-base font-semibold text-sky-800 mb-4 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs font-bold flex items-center justify-center">5</span>
+          Seguimiento
+        </h2>
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.estado.label }}</label>
+          {{ form.estado }}
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.proxima_visita.label }}</label>
+            {{ form.proxima_visita }}
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.veterinario_responsable.label }}</label>
+            {{ form.veterinario_responsable }}
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-600 mb-1">{{ form.evolucion.label }}</label>
+            {{ form.evolucion }}
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-between">
+        <button type="button" data-next="4" class="tab-next px-5 py-2 border border-sky-300 text-sky-700 rounded-lg text-sm font-medium hover:bg-sky-50 transition">← Anterior</button>
+        <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold transition">
+          Guardar Historia Clínica
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  var tabs = document.querySelectorAll('.tab-btn');
+  var sections = document.querySelectorAll('.tab-section');
+
+  function goTo(n) {
+    tabs.forEach(function(b) { b.classList.toggle('active', b.dataset.tab == n); });
+    sections.forEach(function(s) { s.classList.toggle('active', s.dataset.section == n); });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  tabs.forEach(function(btn) {
+    btn.addEventListener('click', function() { goTo(btn.dataset.tab); });
+  });
+  document.querySelectorAll('.tab-next').forEach(function(btn) {
+    btn.addEventListener('click', function() { goTo(btn.dataset.next); });
+  });
+</script>
+{% endblock %}

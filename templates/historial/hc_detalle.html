@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block title %}{{ hc.numero_hc }} — VetGestión{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <!-- Barra superior -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+      <a href="{% url 'hc_lista' %}" class="text-sm text-sky-600 hover:underline">← Historias Clínicas</a>
+      <h1 class="text-2xl font-bold text-gray-900 mt-1">{{ hc.numero_hc }}</h1>
+      <p class="text-gray-400 text-sm">Creada el {{ hc.fecha_creacion|date:"d/m/Y H:i" }} por {{ hc.creado_por.get_full_name|default:hc.creado_por.username }}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url 'hc_pdf' hc.pk %}" target="_blank"
+         class="inline-flex items-center gap-1.5 px-4 py-2 border border-sky-300 text-sky-700 rounded-lg text-sm font-medium hover:bg-sky-50 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Descargar PDF
+      </a>
+      {% if user.es_admin or user.es_veterinario %}
+      <a href="{% url 'hc_editar' hc.pk %}"
+         class="inline-flex items-center gap-1.5 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-sm font-medium transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        Editar
+      </a>
+      {% endif %}
+      {% if user.es_admin %}
+      <a href="{% url 'hc_eliminar' hc.pk %}"
+         class="inline-flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition">
+        Eliminar
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Badge estado -->
+  <div class="mb-6">
+    {% if hc.estado == 'activa' %}
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">Activa</span>
+    {% else %}
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600">Cerrada</span>
+    {% endif %}
+  </div>
+
+  <!-- Sección 1: Propietario + Paciente -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+
+    <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-5">
+      <h2 class="text-sm font-semibold text-sky-800 mb-3 uppercase tracking-wide">Propietario</h2>
+      <dl class="space-y-1.5 text-sm">
+        <div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Nombre</dt><dd class="font-medium text-gray-800">{{ hc.propietario_nombre }}</dd></div>
+        {% if hc.propietario_documento %}<div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Documento</dt><dd class="text-gray-700">{{ hc.propietario_documento }}</dd></div>{% endif %}
+        {% if hc.propietario_telefono %}<div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Teléfono</dt><dd class="text-gray-700">{{ hc.propietario_telefono }}</dd></div>{% endif %}
+        {% if hc.propietario_email %}<div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Email</dt><dd class="text-gray-700">{{ hc.propietario_email }}</dd></div>{% endif %}
+        {% if hc.propietario_direccion %}<div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Dirección</dt><dd class="text-gray-700">{{ hc.propietario_direccion }}</dd></div>{% endif %}
+      </dl>
+    </div>
+
+    <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-5">
+      <h2 class="text-sm font-semibold text-sky-800 mb-3 uppercase tracking-wide">Paciente</h2>
+      <dl class="space-y-1.5 text-sm">
+        <div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Nombre</dt><dd class="font-medium text-gray-800">{{ hc.mascota.nombre }}</dd></div>
+        <div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Especie</dt><dd class="text-gray-700">{{ hc.mascota.get_especie_display }}</dd></div>
+        <div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Raza</dt><dd class="text-gray-700">{{ hc.mascota.raza|default:"—" }}</dd></div>
+        <div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Sexo</dt><dd class="text-gray-700">{{ hc.get_paciente_sexo_display }}</dd></div>
+        {% if hc.paciente_color_pelaje %}<div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Color</dt><dd class="text-gray-700">{{ hc.paciente_color_pelaje }}</dd></div>{% endif %}
+        {% if hc.paciente_microchip %}<div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Microchip</dt><dd class="text-gray-700">{{ hc.paciente_microchip }}</dd></div>{% endif %}
+        <div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Esterilizado</dt><dd class="text-gray-700">{% if hc.esterilizado %}Sí{% else %}No{% endif %}</dd></div>
+        {% if hc.paciente_senas_particulares %}<div class="flex gap-2"><dt class="text-gray-400 w-24 shrink-0">Señas</dt><dd class="text-gray-700">{{ hc.paciente_senas_particulares }}</dd></div>{% endif %}
+      </dl>
+    </div>
+  </div>
+
+  <!-- Sección 3: Anamnesis -->
+  <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-5 mb-6">
+    <h2 class="text-sm font-semibold text-sky-800 mb-3 uppercase tracking-wide">Anamnesis</h2>
+    <div class="mb-3">
+      <p class="text-xs font-medium text-gray-400 mb-1">Motivo de consulta</p>
+      <p class="text-sm text-gray-800 whitespace-pre-wrap">{{ hc.motivo_consulta }}</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+      {% if hc.dieta %}<div><p class="text-xs text-gray-400 mb-0.5">Dieta</p><p class="text-gray-700">{{ hc.dieta }}</p></div>{% endif %}
+      {% if hc.enfermedades_previas %}<div><p class="text-xs text-gray-400 mb-0.5">Enfermedades previas</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.enfermedades_previas }}</p></div>{% endif %}
+      {% if hc.medicacion_actual %}<div><p class="text-xs text-gray-400 mb-0.5">Medicación actual</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.medicacion_actual }}</p></div>{% endif %}
+      {% if hc.cirugias_previas %}<div><p class="text-xs text-gray-400 mb-0.5">Cirugías previas</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.cirugias_previas }}</p></div>{% endif %}
+      {% if hc.vacunacion %}<div><p class="text-xs text-gray-400 mb-0.5">Vacunación</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.vacunacion }}</p></div>{% endif %}
+      {% if hc.desparasitacion %}<div><p class="text-xs text-gray-400 mb-0.5">Desparasitación</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.desparasitacion }}</p></div>{% endif %}
+      {% if hc.partos %}<div><p class="text-xs text-gray-400 mb-0.5">Partos</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.partos }}</p></div>{% endif %}
+      {% if hc.observaciones_anamnesis %}<div class="sm:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Observaciones</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.observaciones_anamnesis }}</p></div>{% endif %}
+    </div>
+  </div>
+
+  <!-- Sección 4: Examen Clínico -->
+  <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-5 mb-6">
+    <h2 class="text-sm font-semibold text-sky-800 mb-3 uppercase tracking-wide">Examen Clínico</h2>
+    <!-- Vitales -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 p-3 bg-sky-50 rounded-lg border border-sky-100 text-center">
+      <div>
+        <p class="text-xs text-sky-600 font-medium">Temperatura</p>
+        <p class="text-lg font-bold text-gray-800">{{ hc.temperatura|default:"—" }}{% if hc.temperatura %} °C{% endif %}</p>
+      </div>
+      <div>
+        <p class="text-xs text-sky-600 font-medium">FC</p>
+        <p class="text-lg font-bold text-gray-800">{{ hc.frecuencia_cardiaca|default:"—" }}{% if hc.frecuencia_cardiaca %} lpm{% endif %}</p>
+      </div>
+      <div>
+        <p class="text-xs text-sky-600 font-medium">FR</p>
+        <p class="text-lg font-bold text-gray-800">{{ hc.frecuencia_respiratoria|default:"—" }}{% if hc.frecuencia_respiratoria %} rpm{% endif %}</p>
+      </div>
+      <div>
+        <p class="text-xs text-sky-600 font-medium">Peso</p>
+        <p class="text-lg font-bold text-gray-800">{{ hc.peso_actual|default:"—" }}{% if hc.peso_actual %} kg{% endif %}</p>
+      </div>
+    </div>
+    <div class="space-y-3 text-sm">
+      {% if hc.diagnostico_presuntivo %}
+      <div><p class="text-xs font-medium text-gray-400 mb-0.5">Diagnóstico presuntivo</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.diagnostico_presuntivo }}</p></div>
+      {% endif %}
+      <div><p class="text-xs font-medium text-gray-400 mb-0.5">Diagnóstico definitivo</p><p class="text-gray-800 font-medium whitespace-pre-wrap">{{ hc.diagnostico_definitivo }}</p></div>
+      <div><p class="text-xs font-medium text-gray-400 mb-0.5">Tratamiento</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.tratamiento }}</p></div>
+      {% if hc.medicacion_prescrita %}
+      <div><p class="text-xs font-medium text-gray-400 mb-0.5">Medicación prescrita</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.medicacion_prescrita }}</p></div>
+      {% endif %}
+      {% if hc.observaciones_clinicas %}
+      <div><p class="text-xs font-medium text-gray-400 mb-0.5">Observaciones clínicas</p><p class="text-gray-700 whitespace-pre-wrap">{{ hc.observaciones_clinicas }}</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Sección 5: Seguimiento -->
+  <div class="bg-white rounded-xl border border-sky-100 shadow-sm p-5 mb-6">
+    <h2 class="text-sm font-semibold text-sky-800 mb-3 uppercase tracking-wide">Seguimiento</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+      <div>
+        <p class="text-xs text-gray-400 mb-0.5">Veterinario responsable</p>
+        <p class="text-gray-800">{{ hc.veterinario_responsable.get_full_name|default:hc.veterinario_responsable.username|default:"—" }}</p>
+      </div>
+      <div>
+        <p class="text-xs text-gray-400 mb-0.5">Próxima visita</p>
+        <p class="text-gray-800">{{ hc.proxima_visita|date:"d/m/Y"|default:"—" }}</p>
+      </div>
+      {% if hc.evolucion %}
+      <div class="sm:col-span-2">
+        <p class="text-xs text-gray-400 mb-0.5">Evolución</p>
+        <p class="text-gray-700 whitespace-pre-wrap">{{ hc.evolucion }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
