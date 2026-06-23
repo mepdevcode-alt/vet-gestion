@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Favoritos — VetGestión{% endblock %}
+
+{% block extra_css %}
+<style>
+    .fav-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .fav-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 35px rgba(0,0,0,0.12);
+    }
+    .fav-card:hover .foto-fav { transform: scale(1.07); }
+    .foto-fav { transition: transform 0.35s ease; }
+
+    @keyframes heartPop {
+        0%   { transform: scale(1); }
+        50%  { transform: scale(1.35); }
+        100% { transform: scale(1); }
+    }
+    .heart-pop { animation: heartPop 0.3s ease; }
+
+    #grid-favoritos > *:nth-child(1)  { animation: fadeInUp 0.35s ease both 0.05s; }
+    #grid-favoritos > *:nth-child(2)  { animation: fadeInUp 0.35s ease both 0.10s; }
+    #grid-favoritos > *:nth-child(3)  { animation: fadeInUp 0.35s ease both 0.15s; }
+    #grid-favoritos > *:nth-child(4)  { animation: fadeInUp 0.35s ease both 0.20s; }
+    #grid-favoritos > *:nth-child(5)  { animation: fadeInUp 0.35s ease both 0.25s; }
+    #grid-favoritos > *:nth-child(6)  { animation: fadeInUp 0.35s ease both 0.30s; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Encabezado -->
+<div class="mb-8 fade-in-up">
+    <div class="flex items-center gap-3 mb-2">
+        <a href="{% url 'home' %}" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Inicio</a>
+        <span class="text-gray-300">/</span>
+        <a href="{% url 'lista_adopciones' %}" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Adopciones</a>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-600 text-sm font-medium">Mis Favoritos</span>
+    </div>
+    <div class="flex items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-black text-gray-900 flex items-center gap-2">
+                <svg class="w-8 h-8 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                Mis Favoritos
+            </h1>
+            <p class="text-gray-500 mt-1">Las mascotas que guardaste para adoptar.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'lista_adopciones' %}" class="hidden sm:inline-flex items-center gap-2 text-gray-500 hover:text-emerald-600 font-medium text-sm transition-colors border border-gray-200 px-4 py-2 rounded-xl hover:border-emerald-300">
+                ← Ver todas las mascotas
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Contador -->
+<p id="contador-favs" class="text-sm text-gray-500 mb-6"></p>
+
+<!-- Grid (se muestra/oculta por JS) -->
+<div id="grid-favoritos" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+    {% for mascota in mascotas %}
+    <div
+        class="fav-card hidden bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 group"
+        data-fav-id="{{ mascota.id }}"
+    >
+        <a href="{{ mascota.get_absolute_url }}" class="block relative">
+            <!-- Quitar favorito -->
+            <button
+                class="btn-quitar-fav absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full shadow-sm text-rose-500 hover:scale-110 transition-transform"
+                onclick="quitarFav(event, {{ mascota.id }}, this)"
+                title="Quitar de favoritos"
+            >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+            </button>
+
+            <!-- Foto -->
+            <div class="relative overflow-hidden h-52 bg-gray-100">
+                {% if mascota.foto_principal %}
+                <img src="{{ mascota.foto_principal.url }}" alt="{{ mascota.nombre }}" class="foto-fav w-full h-full object-cover" loading="lazy">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100">
+                    <span class="text-7xl">{{ mascota.icono_especie }}</span>
+                </div>
+                {% endif %}
+                <span class="absolute top-3 left-3 bg-white/80 text-gray-700 text-xs font-bold px-3 py-1 rounded-full">
+                    {{ mascota.icono_especie }} {{ mascota.get_especie_display }}
+                </span>
+                {% if mascota.destacado %}
+                <span class="absolute bottom-3 left-3 bg-amber-400 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    ⭐ Destacado
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Info -->
+            <div class="p-5">
+                <h3 class="text-lg font-black text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">
+                    {{ mascota.nombre }}
+                </h3>
+                <div class="flex items-center gap-3 text-xs text-gray-500 mb-2 flex-wrap">
+                    <span>🗓 {{ mascota.edad }}</span>
+                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <span>{{ mascota.get_sexo_display }}</span>
+                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <span>{{ mascota.get_tamanio_display }}</span>
+                </div>
+                {% if mascota.ubicacion or mascota.refugio %}
+                <p class="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    {{ mascota.ubicacion|default:mascota.refugio }}
+                </p>
+                {% endif %}
+                <p class="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-4">{{ mascota.descripcion }}</p>
+                <div class="flex gap-2 mb-4 flex-wrap">
+                    {% if mascota.vacunado %}
+                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-1 rounded-lg">✅ Vacunado</span>
+                    {% endif %}
+                    {% if mascota.castrado %}
+                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg">✅ Castrado</span>
+                    {% endif %}
+                </div>
+                <span class="block w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors">
+                    Ver detalle →
+                </span>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Estado vacío -->
+<div id="estado-vacio" class="hidden text-center py-24">
+    <div class="text-7xl mb-5">💔</div>
+    <h3 class="text-2xl font-bold text-gray-700 mb-3">No tenés favoritos guardados</h3>
+    <p class="text-gray-500 mb-8 max-w-sm mx-auto">
+        Explorá las mascotas disponibles y presioná el corazón ❤️ para guardarlas acá.
+    </p>
+    <a href="{% url 'lista_adopciones' %}" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3 rounded-xl transition-colors">
+        🐾 Ver mascotas disponibles
+    </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const FAV_KEY = 'vet_favoritos';
+
+function getFavoritos() {
+    return JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+}
+
+function saveFavoritos(arr) {
+    localStorage.setItem(FAV_KEY, JSON.stringify(arr));
+    if (typeof actualizarContadorFavoritos === 'function') actualizarContadorFavoritos();
+}
+
+function renderFavoritos() {
+    const favs = getFavoritos();
+    const cards = document.querySelectorAll('[data-fav-id]');
+    let visibles = 0;
+
+    cards.forEach(function(card) {
+        const id = parseInt(card.dataset.favId);
+        if (favs.includes(id)) {
+            card.classList.remove('hidden');
+            visibles++;
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+
+    const contador = document.getElementById('contador-favs');
+    if (contador) {
+        contador.textContent = visibles > 0
+            ? 'Tenés ' + visibles + ' mascota' + (visibles !== 1 ? 's' : '') + ' guardada' + (visibles !== 1 ? 's' : '') + '.'
+            : '';
+    }
+
+    const estadoVacio = document.getElementById('estado-vacio');
+    if (estadoVacio) estadoVacio.classList.toggle('hidden', visibles > 0);
+}
+
+function quitarFav(e, id, btn) {
+    e.preventDefault();
+    e.stopPropagation();
+    btn.classList.add('heart-pop');
+    setTimeout(function() { btn.classList.remove('heart-pop'); }, 300);
+    const favs = getFavoritos();
+    const idx = favs.indexOf(id);
+    if (idx !== -1) favs.splice(idx, 1);
+    saveFavoritos(favs);
+    const card = document.querySelector('[data-fav-id="' + id + '"]');
+    if (card) {
+        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(function() {
+            card.classList.add('hidden');
+            card.style.opacity = '';
+            card.style.transform = '';
+            renderFavoritos();
+        }, 300);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    renderFavoritos();
+});
+</script>
+{% endblock %}

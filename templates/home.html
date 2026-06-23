@@ -1,44 +1,52 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VetGestión - Medicina Integral Veterinaria</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Config de Tailwind ANTES del CDN -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        panda: {
-                            50:  '#EFF6FF',
-                            100: '#DBEAFE',
-                            200: '#BFDBFE',
-                            400: '#5B9BD5',
-                            600: '#2563EB',
-                            700: '#1B4B82',
-                            800: '#1E3A5F',
-                            900: '#152B47',
+        tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            panda: {
+                                50:  '#EFF6FF',
+                                100: '#DBEAFE',
+                                200: '#BFDBFE',
+                                400: '#5B9BD5',
+                                600: '#2563EB',
+                                700: '#1B4B82',
+                                800: '#1E3A5F',
+                                900: '#152B47',
+                            }
+                        },
+                        fontFamily: {
+                            sans: ['Inter', 'sans-serif'],
                         }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
                     }
                 }
             }
-        }
+        };
     </script>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
         body { font-family: 'Inter', sans-serif; }
-
         .hero-gradient {
             background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 50%, #fff 100%);
         }
         .dropdown:hover .dropdown-menu { display: block; }
-        .service-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(109,40,217,0.15); }
-        .service-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .service-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(109,40,217,.15); }
+        .service-card { transition: transform .2s ease, box-shadow .2s ease; }
         .star { color: #f59e0b; }
     </style>
 </head>
@@ -87,6 +95,9 @@
                     </div>
                 </div>
 
+                <a href="{% url 'lista_adopciones' %}" class="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1">
+                    🐾 ADOPCIONES
+                </a>
                 <a href="{% url 'solicitar_turno' %}" class="font-semibold text-gray-700 hover:text-panda-700 transition-colors">SOLICITAR TURNO</a>
             </nav>
 
@@ -99,11 +110,13 @@
             </div>
 
             <!-- Hamburger mobile -->
-            <button id="menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
+            <div class="md:hidden flex items-center gap-1">
+                <button id="menu-btn" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -111,6 +124,7 @@
     <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100">
         <div class="px-4 py-4 space-y-2">
             <a href="#servicios" class="block py-2 font-semibold text-gray-700">SERVICIOS</a>
+            <a href="{% url 'lista_adopciones' %}" class="block py-2 font-semibold text-emerald-600">🐾 ADOPCIONES</a>
             <a href="{% url 'solicitar_turno' %}" class="block py-2 font-semibold text-gray-700">SOLICITAR TURNO</a>
             <a href="{% url 'login' %}" class="block py-2 font-semibold text-gray-700">INICIAR SESIÓN</a>
             <a href="#urgencias" class="block w-full bg-panda-700 text-white text-center font-bold py-2.5 rounded-lg mt-2">🚨 URGENCIAS 24 HS</a>
@@ -436,6 +450,131 @@
             </div>
 
         </div>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     MASCOTAS EN ADOPCIÓN
+     ========================================================= -->
+<section class="bg-emerald-50 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Encabezado -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 text-sm font-semibold px-4 py-2 rounded-full mb-4">
+                🐾 Adopción responsable
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-black text-gray-900 mb-3">Mascotas que buscan un hogar</h2>
+            <p class="text-gray-500 text-lg max-w-xl mx-auto">
+                Descubrí historias de adopción y ayudá a una mascota a encontrar una familia.
+            </p>
+        </div>
+
+        <!-- Cards de adopción -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+            <!-- Card 1: Adoptar cambia vidas -->
+            <a href="{% url 'lista_adopciones' %}" class="group block rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 bg-white hover:-translate-y-2">
+                <div class="relative overflow-hidden h-52">
+                    <img
+                        src="https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=600&h=400&fit=crop&q=80"
+                        alt="Adoptar cambia vidas"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                        <span class="inline-block bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full mb-2">ADOPCIÓN</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-black text-gray-900 text-base mb-2 group-hover:text-emerald-600 transition-colors leading-snug">
+                        Adoptar cambia vidas
+                    </h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        Cada mascota merece una segunda oportunidad.
+                    </p>
+                </div>
+            </a>
+
+            <!-- Card 2: Perros esperando una familia -->
+            <a href="{% url 'lista_adopciones' %}?especie=perro" class="group block rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 bg-white hover:-translate-y-2">
+                <div class="relative overflow-hidden h-52">
+                    <img
+                        src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=400&fit=crop&q=80"
+                        alt="Perros esperando una familia"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                        <span class="inline-block bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full mb-2">🐶 PERROS</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-black text-gray-900 text-base mb-2 group-hover:text-emerald-600 transition-colors leading-snug">
+                        Perros esperando una familia
+                    </h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        Conocé perros rescatados que buscan un hogar.
+                    </p>
+                </div>
+            </a>
+
+            <!-- Card 3: Gatos buscando compañía -->
+            <a href="{% url 'lista_adopciones' %}?especie=gato" class="group block rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 bg-white hover:-translate-y-2">
+                <div class="relative overflow-hidden h-52">
+                    <img
+                        src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&h=400&fit=crop&q=80"
+                        alt="Gatos buscando compañía"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                        <span class="inline-block bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full mb-2">🐱 GATOS</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-black text-gray-900 text-base mb-2 group-hover:text-emerald-600 transition-colors leading-snug">
+                        Gatos buscando compañía
+                    </h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        Pequeños compañeros esperando una familia.
+                    </p>
+                </div>
+            </a>
+
+            <!-- Card 4: Adopción responsable -->
+            <a href="{% url 'lista_adopciones' %}" class="group block rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 bg-white hover:-translate-y-2">
+                <div class="relative overflow-hidden h-52">
+                    <img
+                        src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&h=400&fit=crop&q=80"
+                        alt="Adopción responsable"
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                        <span class="inline-block bg-teal-500 text-white text-xs font-bold px-2 py-1 rounded-full mb-2">❤️ VÍNCULO</span>
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-black text-gray-900 text-base mb-2 group-hover:text-emerald-600 transition-colors leading-snug">
+                        Adopción responsable
+                    </h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        Construí un vínculo para toda la vida.
+                    </p>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- CTA central -->
+        <div class="text-center">
+            <a href="{% url 'lista_adopciones' %}" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-xl transition-colors shadow-lg shadow-emerald-200 text-base">
+                🐾 Ver todas las mascotas en adopción
+            </a>
+        </div>
+
     </div>
 </section>
 

@@ -1,96 +1,107 @@
 <nav class="bg-white shadow-sm border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
+
+            <!-- Logo + navegación -->
             <div class="flex">
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="{% url 'home' %}" class="font-bold text-xl tracking-tight" style="color:#1E3A5F">VetGestión</a>
+                    <a href="{% url 'home' %}" class="font-bold text-xl tracking-tight"
+                       style="color:var(--vet-brand)">VetGestión</a>
                 </div>
                 <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                            Inicio
-                        </a>
+                        <a href="{% url 'dashboard' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Inicio</a>
 
                         {% if user.es_admin or user.es_veterinario %}
-                            <a href="{% url 'lista_mascotas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Mascotas
-                            </a>
+                        <a href="{% url 'lista_mascotas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Mascotas</a>
                         {% endif %}
 
                         {% if user.es_admin or user.es_recepcionista %}
-                            <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Turnos
-                            </a>
-                            <a href="{% url 'lista_facturas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Facturación
-                            </a>
+                        <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Turnos</a>
+                        <a href="{% url 'lista_facturas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Facturación</a>
                         {% endif %}
 
                         {% if user.es_veterinario %}
-                            <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Mis Turnos
-                            </a>
+                        <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Mis Turnos</a>
                         {% endif %}
 
                         {% if user.es_dueno %}
-                            <a href="{% url 'lista_mascotas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Mis Mascotas
-                            </a>
-                            <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Mis Turnos
-                            </a>
-                            <a href="{% url 'lista_facturas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Mis Facturas
-                            </a>
+                        <a href="{% url 'lista_mascotas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Mis Mascotas</a>
+                        <a href="{% url 'lista_turnos' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Mis Turnos</a>
+                        <a href="{% url 'lista_facturas' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Mis Facturas</a>
                         {% endif %}
 
                         {% if user.es_admin %}
-                            <a href="{% url 'lista_usuarios' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                Usuarios
-                            </a>
+                        <a href="{% url 'lista_usuarios' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">Usuarios</a>
                         {% endif %}
 
                         {% if user.puede_crear_dueno %}
-                            <a href="{% url 'crear_dueno' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">
-                                + Dueño
-                            </a>
+                        <a href="{% url 'crear_dueno' %}" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300 text-sm font-medium">+ Dueño</a>
                         {% endif %}
                     {% endif %}
                 </div>
             </div>
-            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+
+            <!-- Acciones derecha (desktop) -->
+            <div class="hidden sm:ml-6 sm:flex sm:items-center gap-2">
+
+                <!-- Favoritos adopciones -->
+                <a href="{% url 'mis_favoritos' %}" title="Mis favoritos"
+                   class="relative flex items-center gap-1.5 text-gray-500 hover:text-rose-500 text-sm font-medium px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <span id="nav-fav-count"
+                          class="hidden absolute -top-1 -right-1 min-w-[1rem] h-4 bg-rose-500 text-white text-xs font-bold rounded-full items-center justify-center leading-none px-0.5"></span>
+                </a>
+
                 {% if user.is_authenticated %}
-                    <span class="text-gray-500 text-xs mr-3 px-2 py-1 bg-gray-100 rounded-full">{{ user.get_rol_display }}</span>
-                    <span class="text-gray-700 text-sm mr-4">{{ user.get_full_name|default:user.username }}</span>
+                    <span class="text-gray-500 text-xs px-2 py-1 bg-gray-100 rounded-full">
+                        {{ user.get_rol_display }}
+                    </span>
+                    <span class="text-gray-700 text-sm">
+                        {{ user.get_full_name|default:user.username }}
+                    </span>
                     <form action="{% url 'logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="text-white px-4 py-2 rounded-md text-sm font-medium transition" style="background-color:#1E3A5F;" onmouseover="this.style.backgroundColor='#1B4B82'" onmouseout="this.style.backgroundColor='#1E3A5F'"">
+                        <button type="submit" class="btn-vet-brand px-4 py-2 rounded-md text-sm font-medium">
                             Cerrar sesión
                         </button>
                     </form>
                 {% else %}
-                    <a href="{% url 'login' %}" class="text-white px-4 py-2 rounded-md text-sm font-medium transition" style="background-color:#1E3A5F;" onmouseover="this.style.backgroundColor='#1B4B82'" onmouseout="this.style.backgroundColor='#1E3A5F'"">
+                    <a href="{% url 'login' %}" class="btn-vet-brand px-4 py-2 rounded-md text-sm font-medium">
                         Iniciar sesión
                     </a>
                 {% endif %}
             </div>
 
-            <!-- Mobile Menu Button -->
-            <div class="-mr-2 flex items-center sm:hidden">
-                <button type="button" id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+            <!-- Mobile: favoritos + hamburguesa -->
+            <div class="-mr-2 flex items-center gap-1 sm:hidden">
+                <a href="{% url 'mis_favoritos' %}" class="relative p-2 text-gray-400 hover:text-rose-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <span id="nav-fav-count-mobile"
+                          class="hidden absolute -top-0.5 -right-0.5 min-w-[1rem] h-4 bg-rose-500 text-white text-xs font-bold rounded-full items-center justify-center leading-none px-0.5"></span>
+                </a>
+
+                <button type="button" id="mobile-menu-btn"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Mobile Menu -->
+    <!-- Menú mobile -->
     <div class="sm:hidden hidden" id="mobile-menu">
-        <div class="pt-2 pb-3 space-y-1 px-4">
+        <div class="pt-2 pb-3 space-y-1 px-4 bg-white border-t border-gray-100">
             {% if user.is_authenticated %}
-                <p class="text-xs text-gray-500 py-2">{{ user.get_full_name|default:user.username }} — {{ user.get_rol_display }}</p>
+                <p class="text-xs text-gray-500 py-2">
+                    {{ user.get_full_name|default:user.username }} — {{ user.get_rol_display }}
+                </p>
                 <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Inicio</a>
                 {% if not user.es_dueno %}
                     <a href="{% url 'lista_mascotas' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Mascotas</a>
@@ -99,17 +110,43 @@
                 {% endif %}
                 <a href="{% url 'lista_turnos' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Turnos</a>
                 <a href="{% url 'lista_facturas' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Facturas</a>
+                <a href="{% url 'mis_favoritos' %}" class="block px-3 py-2 text-base font-medium text-rose-600 hover:bg-rose-50 rounded-md">❤️ Mis Favoritos</a>
                 <form action="{% url 'logout' %}" method="post" class="pt-2">
                     {% csrf_token %}
-                    <button type="submit" class="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md">Cerrar sesión</button>
+                    <button type="submit" class="w-full text-left px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-md">
+                        Cerrar sesión
+                    </button>
                 </form>
+            {% else %}
+                <a href="{% url 'mis_favoritos' %}" class="block px-3 py-2 text-base font-medium text-rose-600 hover:bg-rose-50 rounded-md">❤️ Mis Favoritos</a>
+                <a href="{% url 'login' %}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Iniciar sesión</a>
             {% endif %}
         </div>
     </div>
 </nav>
 
 <script>
-    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+    document.getElementById('mobile-menu-btn').addEventListener('click', function () {
         document.getElementById('mobile-menu').classList.toggle('hidden');
     });
+
+    function actualizarContadorFavoritos() {
+        var favs = JSON.parse(localStorage.getItem('vet_favoritos') || '[]');
+        var count = favs.length;
+        ['nav-fav-count', 'nav-fav-count-mobile'].forEach(function (id) {
+            var badge = document.getElementById(id);
+            if (!badge) return;
+            if (count > 0) {
+                badge.textContent = count > 9 ? '9+' : count;
+                badge.classList.remove('hidden');
+                badge.style.display = 'flex';
+            } else {
+                badge.classList.add('hidden');
+                badge.style.display = '';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', actualizarContadorFavoritos);
+    window.addEventListener('storage', actualizarContadorFavoritos);
 </script>

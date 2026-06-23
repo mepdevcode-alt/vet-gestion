@@ -1,0 +1,201 @@
+/* ================================================================
+   VetGestión — Dark Mode Global Stylesheet
+   Se activa cuando <html> tiene la clase "dark".
+   La función toggleDarkMode() en base.html y home.html la gestiona.
+
+   ESTRATEGIA: sobrescribir las clases de Tailwind más comunes
+   usando el prefijo html.dark para mayor especificidad.
+   ================================================================ */
+
+/* ── 1. BASE ──────────────────────────────────────────────────── */
+
+html.dark body {
+  background-color: #111827; /* gray-900 */
+  color: #f3f4f6;            /* gray-100 */
+}
+
+/* ── 2. FONDOS BLANCOS → GRIS OSCURO ───────────────────────────
+   bg-white se usa en: cards, paneles, navbar, formularios, tablas
+   ─────────────────────────────────────────────────────────────── */
+html.dark .bg-white {
+  background-color: #1f2937 !important; /* gray-800 */
+}
+
+/* ── 3. FONDOS GRISES SUTILES ───────────────────────────────────
+   bg-gray-50: página, encabezados de tabla, secciones
+   bg-gray-100: hover, badges neutros, imágenes placeholder
+   ─────────────────────────────────────────────────────────────── */
+html.dark .bg-gray-50 {
+  background-color: #1e293b !important; /* slate-800 */
+}
+
+html.dark .bg-gray-100 {
+  background-color: #374151 !important; /* gray-700 */
+}
+
+html.dark .bg-gray-200 {
+  background-color: #4b5563 !important; /* gray-600 */
+}
+
+/* ── 4. TEXTO ──────────────────────────────────────────────────── */
+html.dark .text-gray-900 { color: #f9fafb !important; }
+html.dark .text-gray-800 { color: #f3f4f6 !important; }
+html.dark .text-gray-700 { color: #e5e7eb !important; }
+html.dark .text-gray-600 { color: #d1d5db !important; }
+html.dark .text-gray-500 { color: #9ca3af !important; }
+html.dark .text-gray-400 { color: #6b7280 !important; }
+
+/* ── 5. BORDES ─────────────────────────────────────────────────── */
+html.dark .border-gray-100 { border-color: #374151 !important; }
+html.dark .border-gray-200 { border-color: #374151 !important; }
+html.dark .border-gray-300 { border-color: #4b5563 !important; }
+html.dark .border-dashed    { border-color: #4b5563 !important; }
+
+/* ── 6. DIVISORES ──────────────────────────────────────────────── */
+html.dark .divide-y      > * + * { border-color: #374151 !important; }
+html.dark .divide-gray-100 > * + * { border-color: #374151 !important; }
+html.dark .divide-gray-200 > * + * { border-color: #374151 !important; }
+
+/* ── 7. TABLAS ─────────────────────────────────────────────────── */
+html.dark table td,
+html.dark table th {
+  border-color: #374151 !important;
+}
+
+html.dark table tbody tr:hover {
+  background-color: #374151 !important;
+}
+
+/* ── 8. FORMULARIOS ────────────────────────────────────────────── */
+html.dark input[type="text"],
+html.dark input[type="password"],
+html.dark input[type="email"],
+html.dark input[type="number"],
+html.dark input[type="date"],
+html.dark input[type="time"],
+html.dark input[type="datetime-local"],
+html.dark input[type="search"],
+html.dark input[type="tel"],
+html.dark input[type="url"],
+html.dark textarea,
+html.dark select {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  outline-color: #818cf8 !important;
+  --tw-ring-color: rgba(129, 140, 248, 0.3);
+}
+
+/* ── 9. SOMBRAS ────────────────────────────────────────────────── */
+html.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.5) !important;
+}
+html.dark .shadow {
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.5), 0 1px 2px -1px rgba(0,0,0,.5) !important;
+}
+html.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.5), 0 2px 4px -2px rgba(0,0,0,.4) !important;
+}
+html.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,.5), 0 4px 6px -4px rgba(0,0,0,.4) !important;
+}
+html.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,.5), 0 8px 10px -6px rgba(0,0,0,.4) !important;
+}
+html.dark .shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.7) !important;
+}
+
+/* ── 10. BOTONES NEUTROS ───────────────────────────────────────── */
+/* Botones con fondo gris ("Cancelar", "Ver detalles", etc.) */
+html.dark .bg-gray-100.text-gray-700,
+html.dark .bg-gray-100.text-gray-600 {
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+}
+html.dark .hover\:bg-gray-200:hover {
+  background-color: #4b5563 !important;
+}
+
+/* ── 11. COLORES PANDA (home.html) ─────────────────────────────── */
+html.dark .bg-panda-50  { background-color: #1a2744 !important; }
+html.dark .bg-panda-100 { background-color: #1e3a5f !important; }
+
+html.dark .text-panda-700 { color: #93c5fd !important; } /* blue-300 */
+html.dark .text-panda-600 { color: #60a5fa !important; } /* blue-400 */
+html.dark .text-panda-400 { color: #5B9BD5 !important; }
+
+html.dark .border-panda-100 { border-color: #1e3a5f !important; }
+
+/* ── 12. HOME — HERO GRADIENT ──────────────────────────────────── */
+html.dark .hero-gradient {
+  background: linear-gradient(135deg, #1a2744 0%, #0f1f35 50%, #111827 100%) !important;
+}
+
+/* ── 13. TARJETAS CON GRADIENTE DE HOME ────────────────────────── */
+/* Estas usan bg-gradient-to-br con colores de servicio y se dejan
+   en color porque le dan identidad visual a la grilla de servicios. */
+
+/* ── 14. BLOG / TESTIMONIOS EN HOME ────────────────────────────── */
+html.dark article.rounded-2xl {
+  background-color: #1f2937;
+}
+html.dark .bg-white.rounded-2xl {
+  background-color: #1f2937 !important;
+}
+
+/* ── 15. HEADER HOME (sticky) ───────────────────────────────────── */
+html.dark header.bg-white {
+  background-color: #1f2937 !important;
+  border-bottom-color: #374151;
+}
+
+/* ── 16. DROPDOWN HOME ──────────────────────────────────────────── */
+html.dark .dropdown-menu {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+}
+html.dark .dropdown-menu a:hover {
+  background-color: #374151 !important;
+}
+
+/* ── 17. MOBILE MENU HOME ───────────────────────────────────────── */
+html.dark #mobile-menu.border-t {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* ── 18. OVERRIDES ESPECÍFICOS BASE.HTML ──────────────────────── */
+/* Badge de rol en navbar */
+html.dark .bg-gray-100.rounded-full {
+  background-color: #374151 !important;
+  color: #d1d5db !important;
+}
+
+/* Notas box (historial) */
+html.dark .bg-yellow-50 {
+  background-color: #422006 !important;
+}
+html.dark .border-yellow-200 {
+  border-color: #78350f !important;
+}
+html.dark .text-yellow-700 {
+  color: #fbbf24 !important;
+}
+
+/* ── 19. TOGGLE BOTÓN ──────────────────────────────────────────── */
+/* Estilo del botón de toggle cuando está en modo oscuro */
+html.dark #dark-mode-btn,
+html.dark #dark-toggle-home {
+  color: #fbbf24; /* amarillo sol */
+}
