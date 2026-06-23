@@ -66,6 +66,19 @@
         </div>
         {% endif %}
 
+        {% if user.es_dueno and factura.estado == 'pendiente' %}
+        <div class="border-t border-gray-100 pt-6">
+            <h3 class="font-medium text-gray-900 mb-3">Pagar online</h3>
+            <a href="{% url 'iniciar_pago_mp' factura.pk %}"
+               class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10zm-1-7h2v2h-2zm0-8h2v6h-2z"/>
+                </svg>
+                Pagar con Mercado Pago
+            </a>
+        </div>
+        {% endif %}
+
         {% if user.es_admin or user.es_recepcionista %}
         <div class="border-t border-gray-100 pt-6">
             <h3 class="font-medium text-gray-900 mb-3">Cambiar estado</h3>
