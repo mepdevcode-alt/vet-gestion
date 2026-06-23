@@ -1,7 +1,6 @@
 import json
 import logging
 
-import mercadopago
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -125,6 +124,7 @@ class IniciarPagoMP(LoginRequiredMixin, View):
             messages.warning(request, 'Esta factura no está pendiente de pago.')
             return redirect(reverse('detalle_factura', kwargs={'pk': pk}))
 
+        import mercadopago
         sdk = mercadopago.SDK(settings.MP_ACCESS_TOKEN)
 
         items = [
@@ -198,6 +198,7 @@ class WebhookMP(View):
         if not payment_id:
             return HttpResponse(status=400)
 
+        import mercadopago
         sdk = mercadopago.SDK(settings.MP_ACCESS_TOKEN)
         result = sdk.payment().get(payment_id)
 
