@@ -13,6 +13,7 @@ class Command(BaseCommand):
         from apps.historial.models import ConsultaMedica
         from apps.turnos.models import Turno
         from apps.facturacion.models import Factura, ItemFactura
+        from apps.adopciones.models import MascotaAdopcion
 
         self.stdout.write('Eliminando datos previos de prueba...')
         ItemFactura.objects.all().delete()
@@ -20,6 +21,7 @@ class Command(BaseCommand):
         ConsultaMedica.objects.all().delete()
         Turno.objects.all().delete()
         Mascota.objects.all().delete()
+        MascotaAdopcion.objects.all().delete()
         Usuario.objects.filter(is_superuser=False).delete()
 
         self.stdout.write('Creando usuarios...')
@@ -345,6 +347,112 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'  OK {Factura.objects.count()} facturas creadas'))
         self.stdout.write(self.style.SUCCESS(f'  OK {ItemFactura.objects.count()} ítems de factura creados'))
+
+        self.stdout.write('Creando mascotas en adopción...')
+
+        MascotaAdopcion.objects.create(
+            nombre='Bruno',
+            especie='perro',
+            raza='Labrador mix',
+            edad='2 años',
+            sexo='macho',
+            tamanio='grande',
+            descripcion='Bruno es un perro muy cariñoso y juguetón. Le encanta correr y jugar con pelotas. Lleva 3 meses en el refugio y busca una familia con espacio al aire libre.',
+            vacunado=True,
+            castrado=True,
+            disponible=True,
+            destacado=True,
+            fecha_ingreso=date(2026, 3, 10),
+            ubicacion='Buenos Aires',
+            refugio='Refugio Patitas Felices',
+        )
+
+        MascotaAdopcion.objects.create(
+            nombre='Mochi',
+            especie='gato',
+            raza='Mestizo',
+            edad='8 meses',
+            sexo='hembra',
+            tamanio='pequeño',
+            descripcion='Mochi es una gatita muy curiosa y activa. Fue rescatada de la calle siendo cachorra. Ideal para departamento, convive bien con otros gatos.',
+            vacunado=True,
+            castrado=False,
+            disponible=True,
+            destacado=True,
+            fecha_ingreso=date(2026, 4, 1),
+            ubicacion='Buenos Aires',
+            refugio='Refugio Patitas Felices',
+        )
+
+        MascotaAdopcion.objects.create(
+            nombre='Toto',
+            especie='perro',
+            raza='Beagle',
+            edad='4 años',
+            sexo='macho',
+            tamanio='mediano',
+            descripcion='Toto fue abandonado por su anterior familia al mudarse. Es tranquilo, obediente y ya sabe varios comandos básicos. Excelente con niños.',
+            vacunado=True,
+            castrado=True,
+            disponible=True,
+            destacado=False,
+            fecha_ingreso=date(2026, 2, 20),
+            ubicacion='GBA Norte',
+            refugio='Hogar Transitorio Canino',
+        )
+
+        MascotaAdopcion.objects.create(
+            nombre='Nala',
+            especie='gato',
+            raza='Angora mix',
+            edad='3 años',
+            sexo='hembra',
+            tamanio='mediano',
+            descripcion='Nala es una gata independiente pero muy cariñosa con quien se gana su confianza. Prefiere ambientes tranquilos y sin perros.',
+            vacunado=True,
+            castrado=True,
+            disponible=True,
+            destacado=False,
+            fecha_ingreso=date(2026, 1, 15),
+            ubicacion='Buenos Aires',
+            refugio='Refugio Patitas Felices',
+        )
+
+        MascotaAdopcion.objects.create(
+            nombre='Pipa',
+            especie='conejo',
+            raza='Holandés enano',
+            edad='1 año',
+            sexo='hembra',
+            tamanio='pequeño',
+            descripcion='Pipa es una coneja muy dócil y sociable. Come bien, no da problemas y es perfecta para quienes buscan una mascota tranquila. Viene con jaula.',
+            vacunado=False,
+            castrado=False,
+            disponible=True,
+            destacado=False,
+            fecha_ingreso=date(2026, 5, 3),
+            ubicacion='GBA Sur',
+            refugio='Rescate Pequeños Amigos',
+        )
+
+        MascotaAdopcion.objects.create(
+            nombre='Thor',
+            especie='perro',
+            raza='Pastor Alemán mix',
+            edad='1 año',
+            sexo='macho',
+            tamanio='grande',
+            descripcion='Thor es joven y tiene muchísima energía. Necesita actividad física diaria y espacio para correr. Está en proceso de socialización con otros perros.',
+            vacunado=True,
+            castrado=False,
+            disponible=True,
+            destacado=True,
+            fecha_ingreso=date(2026, 5, 18),
+            ubicacion='Buenos Aires',
+            refugio='Hogar Transitorio Canino',
+        )
+
+        self.stdout.write(self.style.SUCCESS(f'  OK {MascotaAdopcion.objects.count()} mascotas en adopción creadas'))
 
         self.stdout.write('')
         self.stdout.write(self.style.SUCCESS('=== Datos de prueba cargados exitosamente ==='))
