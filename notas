@@ -1,0 +1,204 @@
+  
+  
+  
+   venv\Scripts\python manage.py migrate
+  venv\Scripts\python manage.py cargar_datos_prueba
+  
+  
+   pip install -r requirements.txt 
+  
+  
+  .claude/commands/ — 5 comandos activos que Claude Code reconoce con /:
+
+  ┌──────────────────────┬───────────────────────────────────────────────────────────┐
+  │     Invocar así      │                         Qué hace                          │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /tarea <descripción> │ Orquestador: analiza, delega y coordina todos los agentes │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  - Incluyen los patrones exactos del proyecto (CBVs, filtro dueño, services.py)
+  - Son pasados directamente al subagente cuando el orquestador los activa
+
+  Cómo usarlo
+
+  ┌──────────────────────┬───────────────────────────────────────────────────────────┐
+  │     Invocar así      │                         Qué hace                          │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+      48  ## Descripción del Proyecto
+      49
+      50  Sistema de gestión para clínica veterinaria construido con Django. Implementación completa con 5 apps (`usuarios`, `mascotas`, `historial`, `t       
+          urnos`, `facturacion`), autenticación basada en roles y soporte multi-base de datos.
+
+● Verifico que la estructura quedó completa:
+
+  Listed 1 directory (ctrl+o to expand)
+
+● Todo en orden. Aquí está el resumen de lo que se configuró:
+
+  ---
+  Qué se creó
+
+  .claude/commands/ — 5 comandos activos que Claude Code reconoce con /:
+
+  ┌──────────────────────┬───────────────────────────────────────────────────────────┐
+  │     Invocar así      │                         Qué hace                          │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /tarea <descripción> │ Orquestador: analiza, delega y coordina todos los agentes │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  ┌──────────────────────┬───────────────────────────────────────────────────────────┐
+  │     Invocar así      │                         Qué hace                          │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /tarea <descripción> │ Orquestador: analiza, delega y coordina todos los agentes │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │     Invocar así      │                         Qué hace                          │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /tarea <descripción> │ Orquestador: analiza, delega y coordina todos los agentes │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │     Invocar así      │                         Qué hace                          │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /tarea <descripción> │ Orquestador: analiza, delega y coordina todos los agentes │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /tarea <descripción> │ Orquestador: analiza, delega y coordina todos los agentes │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /tarea <descripción> │ Orquestador: analiza, delega y coordina todos los agentes │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /backend <tarea>     │ Agente backend directo                                    │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  - Incluyen los patrones exactos del proyecto (CBVs, filtro dueño, services.py)
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /frontend <tarea>    │ Agente frontend directo                                   │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  - Incluyen los patrones exactos del proyecto (CBVs, filtro dueño, services.py)
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  │ /qa <tarea>          │ Agente QA directo                                         │
+  ├──────────────────────┼───────────────────────────────────────────────────────────┤
+  │ /seguridad <tarea>   │ Auditoría de seguridad directa                            │
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  - Incluyen los patrones exactos del proyecto (CBVs, filtro dueño, services.py)
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  └──────────────────────┴───────────────────────────────────────────────────────────┘
+
+  agents/*.md — Los 6 archivos fueron reescritos como prompts operacionales que:
+  - Reflejan el codebase actual (no features futuras)
+  - Incluyen los patrones exactos del proyecto (CBVs, filtro dueño, services.py)
+  - Son pasados directamente al subagente cuando el orquestador los activa
+
+  Cómo usarlo
+
+  Para una tarea grande con varios componentes:
+  /tarea agregar módulo de recordatorios de vacunas para mascotas
+
+  Para algo puntual en un solo área:
+  /backend agregar campo color_pelo a Mascota
+  /frontend actualizar la tabla de mascotas para mostrar color de pelo
+  /seguridad revisar las vistas de facturación
+
+✻ Sautéed for 4m 56s
+
+※ recap: Sistema multi-agente configurado con comandos /tarea, /backend, /frontend, /qa y /seguridad en .claude/commands/. Los archivos agents/ fueron reescritos como prompts operacionales. Listo para   
+  usar.
+
+
+
+
+  Usuarios actuales en la base de datos:
+
+  ┌───────────────┬───────────┬───────────────┬───────────┐
+  │   Username    │ Password  │      Rol      │ Superuser │
+  ├───────────────┼───────────┼───────────────┼───────────┤
+  │ admin_clinica │ Admin123. │ Admin         │    ✅     │
+  ├───────────────┼───────────┼───────────────┼───────────┤
+  │        │ 123456    │ Veterinario   │     —     │
+  ├───────────────┼───────────┼───────────────┼───────────┤
+  │ dr_carlos     │ 123456    │ Veterinario   │     —     │
+  ├───────────────┼───────────┼───────────────┼───────────┤
+  │ recep_lucia   │ 123456    │ Recepcionista │     —     │
+  ├───────────────┼───────────┼───────────────┼───────────┤
+  │ juan_perez    │ 123456    │ Dueño         │     —     │
+  ├───────────────┼───────────┼───────────────┼───────────┤
+  │ maria_lopez   │ 123456    │ Dueño         │     —     │
+  ├───────────────┼───────────┼───────────────┼───────────┤
+  │ andres_garcia │ 123456    │ Dueño         │     —     │
+  └───────────────┴───────────┴───────────────┴───────────┘
