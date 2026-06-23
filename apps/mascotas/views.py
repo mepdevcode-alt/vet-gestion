@@ -64,7 +64,12 @@ class EditarMascota(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     success_url = reverse_lazy('lista_mascotas')
 
     def test_func(self):
-        return self.request.user.es_admin() or self.request.user.es_veterinario()
+        usuario = self.request.user
+        if usuario.es_admin() or usuario.es_veterinario():
+            return True
+        if usuario.es_dueno():
+            return Mascota.objects.filter(pk=self.kwargs['pk'], dueno=usuario).exists()
+        return False
 
     def form_valid(self, form):
         messages.success(self.request, f'Mascota "{form.instance.nombre}" actualizada.')

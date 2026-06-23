@@ -63,12 +63,37 @@
         </div>
     </main>
 
-    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-gray-500 text-sm">
-                &copy; 2026 Clínica Veterinaria. Todos los derechos reservados.
-            </p>
-            <p class="text-gray-300 text-xs hidden sm:block">Sistema de gestión integral</p>
+    <footer class="bg-white border-t border-gray-100 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+
+                <!-- Marca -->
+                <div>
+                    <a href="{% url 'home' %}" class="font-black text-lg" style="color:var(--vet-brand)">VetGestión</a>
+                    <p class="text-gray-400 text-xs mt-1">Sistema de gestión veterinaria</p>
+                </div>
+
+                <!-- Links rápidos -->
+                <div class="flex justify-start sm:justify-center gap-5">
+                    <a href="{% url 'home' %}" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Inicio</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Dashboard</a>
+                    {% endif %}
+                    <a href="{% url 'lista_adopciones' %}" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Adopciones</a>
+                </div>
+
+                <!-- Copyright -->
+                <div class="sm:text-right">
+                    <p class="text-gray-400 text-xs">&copy; {% now "Y" %} Clínica Veterinaria</p>
+                    <p class="text-gray-300 text-xs mt-0.5">Todos los derechos reservados</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Barra inferior -->
+        <div class="border-t border-gray-50 py-2">
+            <p class="text-center text-gray-300 text-xs">Desarrollado con Django &amp; Tailwind CSS</p>
         </div>
     </footer>
 
