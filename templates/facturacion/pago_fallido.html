@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Pago fallido — VetGestión{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto text-center py-16">
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-10">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">El pago no se pudo procesar</h1>
+        <p class="text-gray-500 mb-1">Hubo un problema al procesar tu pago.</p>
+        <p class="text-gray-400 text-sm mb-6">
+            Podés intentarlo nuevamente o contactar a la clínica.
+        </p>
+        <div class="flex gap-3 justify-center">
+            <a href="{% url 'iniciar_pago_mp' factura.pk %}"
+               class="inline-block bg-blue-500 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-600 transition">
+                Reintentar pago
+            </a>
+            <a href="{% url 'detalle_factura' factura.pk %}"
+               class="inline-block bg-gray-100 text-gray-700 px-6 py-2 rounded-md font-medium hover:bg-gray-200 transition">
+                Ver factura
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

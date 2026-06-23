@@ -4,6 +4,45 @@ from apps.turnos.models import Turno
 from apps.usuarios.models import Usuario
 
 
+class PagoMercadoPago(models.Model):
+    ESTADO_PENDIENTE = 'pending'
+    ESTADO_APROBADO = 'approved'
+    ESTADO_RECHAZADO = 'rejected'
+    ESTADO_EN_PROCESO = 'in_process'
+
+    ESTADOS = [
+        (ESTADO_PENDIENTE, 'Pendiente'),
+        (ESTADO_APROBADO, 'Aprobado'),
+        (ESTADO_RECHAZADO, 'Rechazado'),
+        (ESTADO_EN_PROCESO, 'En proceso'),
+    ]
+
+    factura = models.ForeignKey(
+        'Factura',
+        on_delete=models.CASCADE,
+        related_name='pagos_mp',
+        verbose_name='Factura',
+    )
+    preference_id = models.CharField(max_length=255, verbose_name='ID de preferencia MP')
+    payment_id = models.CharField(max_length=255, blank=True, verbose_name='ID de pago MP')
+    estado_mp = models.CharField(
+        max_length=20,
+        choices=ESTADOS,
+        default=ESTADO_PENDIENTE,
+        verbose_name='Estado en MP',
+    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creación')
+    fecha_actualizacion = models.DateTimeField(auto_now=True, verbose_name='Última actualización')
+
+    class Meta:
+        verbose_name = 'pago Mercado Pago'
+        verbose_name_plural = 'pagos Mercado Pago'
+        ordering = ['-fecha_creacion']
+
+    def __str__(self) -> str:
+        return f'Pago MP #{self.id} — Factura #{self.factura_id}'
+
+
 class Factura(models.Model):
     ESTADO_PENDIENTE = 'pendiente'
     ESTADO_PAGADO = 'pagado'
