@@ -135,7 +135,7 @@
                 <a href="{% url 'lista_adopciones' %}" class="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1">
                     🐾 ADOPCIONES
                 </a>
-                <a href="{% url 'solicitar_turno' %}" class="font-semibold text-gray-700 hover:text-panda-700 transition-colors">SOLICITAR TURNO</a>
+                <a href="{% url 'turnos:solicitar' %}" class="font-semibold text-gray-700 hover:text-panda-700 transition-colors">SOLICITAR TURNO</a>
             </nav>
 
             <!-- CTAs desktop -->
@@ -165,7 +165,7 @@
         <div class="px-4 py-4 space-y-2">
             <a href="#servicios" class="block py-2 font-semibold text-gray-700">SERVICIOS</a>
             <a href="{% url 'lista_adopciones' %}" class="block py-2 font-semibold text-emerald-600">🐾 ADOPCIONES</a>
-            <a href="{% url 'solicitar_turno' %}" class="block py-2 font-semibold text-gray-700">SOLICITAR TURNO</a>
+            <a href="{% url 'turnos:solicitar' %}" class="block py-2 font-semibold text-gray-700">SOLICITAR TURNO</a>
             <a href="{% url 'login' %}" class="block py-2 font-semibold text-gray-700">INICIAR SESIÓN</a>
             <a href="#urgencias" class="block w-full bg-panda-700 text-white text-center font-bold py-2.5 rounded-lg mt-2">🚨 URGENCIAS 24 HS</a>
         </div>
