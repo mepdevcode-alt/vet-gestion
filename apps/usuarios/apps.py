@@ -9,8 +9,10 @@ class UsuariosConfig(AppConfig):
     verbose_name = 'Usuarios'
 
     def ready(self) -> None:
-        # Solo en el proceso principal del servidor de desarrollo (no en el watcher del autoreloader)
-        if os.environ.get('RUN_MAIN') == 'true':
+        import sys
+        # Solo cuando se levanta el servidor de desarrollo (no en otros comandos de manage.py)
+        es_runserver = len(sys.argv) > 1 and sys.argv[1] == 'runserver'
+        if es_runserver and os.environ.get('RUN_MAIN') == 'true':
             import warnings
             from django.core.management import call_command
             with warnings.catch_warnings():

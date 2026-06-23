@@ -235,12 +235,31 @@ class TurnosHoyVetView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return self.request.user.es_veterinario()
 
     def get_queryset(self):
-        hoy = timezone.localdate()
-        return Turno.objects.filter(
+        qs = Turno.objects.filter(
             veterinario=self.request.user,
-            estado=Turno.ESTADO_APROBADO,
-            fecha_hora__date=hoy,
-        ).select_related('mascota', 'mascota__dueno').order_by('fecha_hora')
+        ).select_related('mascota', 'mascota__dueno')
+
+        estado = self.request.GET.get('estado')
+        if estado:
+            qs = qs.filter(estado=estado)
+
+        fecha = self.request.GET.get('fecha')
+        if fecha:
+            qs = qs.filter(fecha_hora__date=fecha)
+
+        paciente = self.request.GET.get('paciente', '').strip()
+        if paciente:
+            qs = qs.filter(mascota__nombre__icontains=paciente)
+
+        return qs.order_by('fecha_hora')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['estados'] = Turno.ESTADOS
+        ctx['filtro_estado'] = self.request.GET.get('estado', '')
+        ctx['filtro_fecha'] = self.request.GET.get('fecha', '')
+        ctx['filtro_paciente'] = self.request.GET.get('paciente', '')
+        return ctx
 
 
 class DetalleTurnoView(LoginRequiredMixin, DetailView):

@@ -1,30 +1,65 @@
 {% extends "base.html" %}
 
-{% block title %}Mis Turnos de Hoy{% endblock %}
+{% block title %}Mis Turnos{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto px-4 py-8">
+<div class="max-w-6xl mx-auto px-4 py-8">
 
-  <h1 class="text-2xl font-bold text-gray-900 mb-2">Mis turnos de hoy</h1>
-  <p class="text-gray-500 text-sm mb-6">{% now "l d/m/Y"|capfirst %}</p>
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Mis Turnos</h1>
+
+  <!-- Filtros -->
+  <form method="get" class="bg-white rounded-lg border border-gray-200 p-4 mb-6 flex flex-wrap gap-4 items-end">
+    <div>
+      <label class="block text-xs font-medium text-gray-600 mb-1">Paciente</label>
+      <input type="text" name="paciente" value="{{ filtro_paciente }}" placeholder="Nombre de la mascota"
+             class="px-3 py-2 border border-gray-300 rounded-md text-sm w-48">
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-600 mb-1">Estado</label>
+      <select name="estado" class="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white">
+        <option value="">Todos</option>
+        {% for valor, etiqueta in estados %}
+          <option value="{{ valor }}" {% if filtro_estado == valor %}selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
+      <input type="date" name="fecha" value="{{ filtro_fecha }}"
+             class="px-3 py-2 border border-gray-300 rounded-md text-sm">
+    </div>
+    <button type="submit"
+            class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition">
+      Filtrar
+    </button>
+    <a href="{% url 'turnos:turnos_hoy_vet' %}"
+       class="px-4 py-2 border border-gray-300 text-gray-600 text-sm rounded-md hover:bg-gray-50 transition">
+      Limpiar
+    </a>
+  </form>
 
   {% if turnos %}
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm border border-slate-300 overflow-hidden">
       <table class="min-w-full text-sm">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-slate-100 border-b-2 border-slate-300">
           <tr>
-            <th class="px-4 py-3 text-left font-medium text-gray-600">Hora</th>
-            <th class="px-4 py-3 text-left font-medium text-gray-600">Mascota</th>
-            <th class="px-4 py-3 text-left font-medium text-gray-600">Dueño</th>
-            <th class="px-4 py-3 text-left font-medium text-gray-600">Tipo</th>
-            <th class="px-4 py-3 text-left font-medium text-gray-600">Duración</th>
-            <th class="px-4 py-3 text-left font-medium text-gray-600"></th>
+            <th class="px-4 py-3 text-left font-semibold text-slate-700 uppercase tracking-wide text-xs">Fecha / Hora</th>
+            <th class="px-4 py-3 text-left font-semibold text-slate-700 uppercase tracking-wide text-xs">Paciente</th>
+            <th class="px-4 py-3 text-left font-semibold text-slate-700 uppercase tracking-wide text-xs">Dueño</th>
+            <th class="px-4 py-3 text-left font-semibold text-slate-700 uppercase tracking-wide text-xs">Tipo</th>
+            <th class="px-4 py-3 text-left font-semibold text-slate-700 uppercase tracking-wide text-xs">Duración</th>
+            <th class="px-4 py-3 text-left font-semibold text-slate-700 uppercase tracking-wide text-xs">Estado</th>
+            <th class="px-4 py-3 text-left font-semibold text-slate-700 uppercase tracking-wide text-xs">Motivo</th>
+            <th class="px-4 py-3"></th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-100">
+        <tbody class="divide-y divide-slate-200">
           {% for turno in turnos %}
-            <tr class="hover:bg-gray-50">
-              <td class="px-4 py-3 font-semibold text-gray-900">{{ turno.fecha_hora|date:"H:i" }}hs</td>
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">
+                {{ turno.fecha_hora|date:"d/m/Y" }}<br>
+                <span class="text-gray-500 font-normal text-xs">{{ turno.fecha_hora|date:"H:i" }} hs</span>
+              </td>
               <td class="px-4 py-3">
                 <p class="font-medium text-gray-900">{{ turno.mascota.nombre }}</p>
                 <p class="text-xs text-gray-500">{{ turno.mascota.get_especie_display }}</p>
@@ -33,10 +68,20 @@
                 {{ turno.mascota.dueno.get_full_name|default:turno.mascota.dueno.username }}
               </td>
               <td class="px-4 py-3 text-gray-700">{{ turno.get_tipo_consulta_display }}</td>
-              <td class="px-4 py-3 text-gray-500">{{ turno.duracion_minutos }} min</td>
+              <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ turno.duracion_minutos }} min</td>
+              <td class="px-4 py-3">
+                <span class="px-2.5 py-1 text-xs font-semibold rounded-full {{ turno.get_color_estado }}">
+                  {{ turno.get_estado_display }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-gray-600 max-w-xs truncate" title="{{ turno.motivo }}">
+                {{ turno.motivo }}
+              </td>
               <td class="px-4 py-3">
                 <a href="{% url 'turnos:detalle' turno.pk %}"
-                   class="text-xs text-indigo-600 hover:underline">Ver detalle</a>
+                   class="px-2.5 py-1 text-xs font-medium border border-slate-300 text-slate-600 rounded-md hover:bg-slate-100 transition">
+                  Ver
+                </a>
               </td>
             </tr>
           {% endfor %}
@@ -44,8 +89,8 @@
       </table>
     </div>
   {% else %}
-    <div class="text-center py-16 text-gray-500">
-      No tenés turnos aprobados para hoy.
+    <div class="text-center py-16 text-gray-400">
+      No hay turnos que coincidan con los filtros seleccionados.
     </div>
   {% endif %}
 
