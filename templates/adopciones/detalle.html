@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ mascota.nombre }} — Adopciones VetGestión{% endblock %}
+
+{% block extra_css %}
+<style>
+    .foto-hero {
+        max-height: 480px;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+    }
+    .miniatura {
+        cursor: pointer;
+        transition: transform 0.2s ease, opacity 0.2s ease, ring-color 0.2s ease;
+    }
+    .miniatura:hover { transform: scale(1.05); }
+    .miniatura.activa { ring: 2px solid #059669; opacity: 1; }
+    .miniatura:not(.activa) { opacity: 0.65; }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0fdf4;
+    }
+.info-row:last-child { border-bottom: none; }
+    .btn-wsp {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-wsp:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+    }
+    /* Fade-in del contenido */
+    .col-foto { animation: fadeInUp 0.4s ease both 0.05s; }
+    .col-info { animation: fadeInUp 0.4s ease both 0.15s; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div class="flex items-center gap-2 mb-6 text-sm fade-in-up">
+    <a href="{% url 'home' %}" class="text-gray-400 hover:text-gray-600 transition-colors">Inicio</a>
+    <span class="text-gray-300">/</span>
+    <a href="{% url 'lista_adopciones' %}" class="text-gray-400 hover:text-gray-600 transition-colors">Adopciones</a>
+    <span class="text-gray-300">/</span>
+    <span class="text-gray-700 font-medium">{{ mascota.nombre }}</span>
+</div>
+
+<div class="grid lg:grid-cols-2 gap-10">
+
+    <!-- Columna izquierda: galería -->
+    <div class="col-foto">
+
+        <!-- Foto principal / galería -->
+        <div class="rounded-2xl overflow-hidden shadow-lg bg-gray-100 w-full">
+            {% if mascota.foto_principal %}
+            <img
+                id="foto-principal"
+                src="{{ mascota.foto_principal.url }}"
+                alt="{{ mascota.nombre }}"
+                class="foto-hero w-full"
+            >
+            {% else %}
+            <div id="foto-principal-placeholder" class="flex items-center justify-center h-80 bg-gradient-to-br from-emerald-50 to-teal-100">
+                <span class="text-9xl">{{ mascota.icono_especie }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Miniaturas de galería -->
+        {% with fotos=mascota.fotos_adicionales.all %}
+        {% if fotos or mascota.foto_principal %}
+        <div class="mt-3 flex gap-2 overflow-x-auto pb-1" id="galeria-miniaturas">
+
+            <!-- Miniatura foto principal -->
+            {% if mascota.foto_principal %}
+            <button
+                class="miniatura activa flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden ring-2 ring-emerald-500 focus:outline-none"
+                onclick="cambiarFoto('{{ mascota.foto_principal.url }}', this)"
+                title="Foto principal"
+            >
+                <img src="{{ mascota.foto_principal.url }}" alt="Principal" class="w-full h-full object-cover">
+            </button>
+            {% endif %}
+
+            <!-- Miniaturas fotos adicionales -->
+            {% for foto in fotos %}
+            <button
+                class="miniatura flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden ring-2 ring-transparent focus:outline-none"
+                onclick="cambiarFoto('{{ foto.foto.url }}', this)"
+                title="Foto {{ forloop.counter }}"
+            >
+                <img src="{{ foto.foto.url }}" alt="Foto {{ forloop.counter }}" class="w-full h-full object-cover">
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Estado sanitario -->
+        <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm text-center">
+                <div class="text-2xl mb-1">{{ mascota.vacunado|yesno:'✅,❌' }}</div>
+                <div class="text-xs font-medium text-gray-500">Vacunado</div>
+            </div>
+            <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm text-center">
+                <div class="text-2xl mb-1">{{ mascota.castrado|yesno:'✅,❌' }}</div>
+                <div class="text-xs font-medium text-gray-500">Castrado/Esterilizado</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Columna derecha: información -->
+    <div class="col-info flex flex-col gap-6">
+
+        <!-- Encabezado -->
+        <div>
+            <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <span class="bg-emerald-100 text-emerald-700 text-sm font-bold px-3 py-1 rounded-full">
+                    {{ mascota.icono_especie }} {{ mascota.get_especie_display }}
+                </span>
+                {% if mascota.destacado %}
+                <span class="bg-amber-100 text-amber-700 text-sm font-bold px-3 py-1 rounded-full">
+                    ⭐ Destacado
+                </span>
+                {% endif %}
+            </div>
+            <div class="flex items-start justify-between gap-3">
+                <h1 class="text-4xl font-black text-gray-900 mb-1">{{ mascota.nombre }}</h1>
+                <!-- Botón favorito detalle -->
+                <button
+                    id="btn-fav-detalle"
+                    onclick="toggleFavDetalle({{ mascota.id }})"
+                    class="flex-shrink-0 mt-1 flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 text-gray-400 hover:border-rose-300 hover:text-rose-500 transition-colors text-sm font-medium"
+                    data-id="{{ mascota.id }}"
+                >
+                    <svg id="fav-icon-detalle" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <span id="fav-label-detalle">Favorito</span>
+                </button>
+            </div>
+
+            <p class="text-gray-400 text-sm">
+                Publicado hace {{ mascota.fecha_publicacion|timesince }}
+            </p>
+        </div>
+
+        <!-- Ficha técnica -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 class="text-base font-bold text-gray-700 mb-4 uppercase tracking-wide">Información</h2>
+            <div class="divide-y divide-gray-50">
+                <div class="info-row">
+                    <span class="text-sm text-gray-500 font-medium">Edad</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ mascota.edad }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="text-sm text-gray-500 font-medium">Sexo</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ mascota.get_sexo_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="text-sm text-gray-500 font-medium">Raza</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ mascota.raza|default:"Mestizo/a" }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="text-sm text-gray-500 font-medium">Tamaño</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ mascota.get_tamanio_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="text-sm text-gray-500 font-medium">Fecha de ingreso</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ mascota.fecha_ingreso|date:"d/m/Y" }}</span>
+                </div>
+                {% if mascota.ubicacion %}
+                <div class="info-row">
+                    <span class="text-sm text-gray-500 font-medium">📍 Ubicación</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ mascota.ubicacion }}</span>
+                </div>
+                {% endif %}
+                {% if mascota.refugio %}
+                <div class="info-row">
+                    <span class="text-sm text-gray-500 font-medium">🏠 Refugio</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ mascota.refugio }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 class="text-base font-bold text-gray-700 mb-3 uppercase tracking-wide">Sobre {{ mascota.nombre }}</h2>
+            <p class="text-gray-600 leading-relaxed text-sm">{{ mascota.descripcion }}</p>
+        </div>
+
+        <!-- CTA adopción -->
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 p-6">
+            <h2 class="text-xl font-black text-gray-900 mb-1">¿Querés adoptar a {{ mascota.nombre }}?</h2>
+            <p class="text-gray-600 text-sm mb-5">
+                Ponete en contacto con nosotros y te contamos todo el proceso de adopción responsable.
+            </p>
+
+            <a
+                href="https://wa.me/5491167634321?text=Hola%21%20Me%20interesa%20adoptar%20a%20{{ mascota.nombre|urlencode }}%20que%20vi%20en%20VetGesti%C3%B3n."
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-wsp flex items-center justify-center gap-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-base transition-colors"
+            >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Solicitar adopción por WhatsApp
+            </a>
+
+            <p class="text-center text-xs text-gray-400 mt-3">
+                También podés llamarnos al <span class="font-semibold text-gray-600">11 6763 4321</span>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<!-- Volver al listado -->
+<div class="mt-10 pt-8 border-t border-gray-100">
+    <a href="{% url 'lista_adopciones' %}" class="inline-flex items-center gap-2 text-gray-500 hover:text-emerald-600 font-medium text-sm transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Volver a todas las mascotas
+    </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Galería de imágenes
+function cambiarFoto(url, btn) {
+    const img = document.getElementById('foto-principal');
+    if (img) {
+        img.style.opacity = '0';
+        setTimeout(function() {
+            img.src = url;
+            img.style.opacity = '1';
+        }, 150);
+    }
+    document.querySelectorAll('.miniatura').forEach(function(m) {
+        m.classList.remove('activa');
+        m.style.ringColor = 'transparent';
+        m.style.outline = 'none';
+    });
+    btn.classList.add('activa');
+    btn.style.outline = '2px solid #059669';
+    btn.style.outlineOffset = '2px';
+}
+
+// Favorito en detalle
+const FAV_KEY = 'vet_favoritos';
+
+function getFavoritos() {
+    return JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+}
+
+function saveFavoritos(arr) {
+    localStorage.setItem(FAV_KEY, JSON.stringify(arr));
+}
+
+function renderFavDetalle(id) {
+    const favs = getFavoritos();
+    const btn = document.getElementById('btn-fav-detalle');
+    const icon = document.getElementById('fav-icon-detalle');
+    const label = document.getElementById('fav-label-detalle');
+    if (!btn) return;
+    if (favs.includes(id)) {
+        icon.style.fill = '#f43f5e';
+        icon.style.stroke = '#f43f5e';
+        btn.classList.add('border-rose-300', 'text-rose-500');
+        btn.classList.remove('border-gray-200', 'text-gray-400');
+        if (label) label.textContent = 'En favoritos';
+    } else {
+        icon.style.fill = 'none';
+        icon.style.stroke = 'currentColor';
+        btn.classList.remove('border-rose-300', 'text-rose-500');
+        btn.classList.add('border-gray-200', 'text-gray-400');
+        if (label) label.textContent = 'Favorito';
+    }
+}
+
+function toggleFavDetalle(id) {
+    const favs = getFavoritos();
+    const idx = favs.indexOf(id);
+    if (idx === -1) {
+        favs.push(id);
+    } else {
+        favs.splice(idx, 1);
+    }
+    saveFavoritos(favs);
+    renderFavDetalle(id);
+    if (typeof actualizarContadorFavoritos === 'function') actualizarContadorFavoritos();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    renderFavDetalle({{ mascota.id }});
+});
+</script>
+{% endblock %}

@@ -15,4 +15,5 @@ urlpatterns = [
     path('historial/', include('apps.historial.urls')),
     path('turnos/', include('apps.turnos.urls')),
     path('facturacion/', include('apps.facturacion.urls')),
+    path('adopciones/', include('apps.adopciones.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

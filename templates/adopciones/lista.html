@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mascotas en Adopción — VetGestión{% endblock %}
+
+{% block extra_css %}
+<style>
+    .adopcion-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .adopcion-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.14); }
+    .adopcion-card:hover .foto-mascota { transform: scale(1.07); }
+    .foto-mascota { transition: transform 0.35s ease; }
+    .badge-especie { backdrop-filter: blur(8px); }
+
+    /* Fade-in escalonado */
+    .card-grid > *:nth-child(1)  { animation: fadeInUp 0.35s ease both 0.05s; }
+    .card-grid > *:nth-child(2)  { animation: fadeInUp 0.35s ease both 0.10s; }
+    .card-grid > *:nth-child(3)  { animation: fadeInUp 0.35s ease both 0.15s; }
+    .card-grid > *:nth-child(4)  { animation: fadeInUp 0.35s ease both 0.20s; }
+    .card-grid > *:nth-child(5)  { animation: fadeInUp 0.35s ease both 0.25s; }
+    .card-grid > *:nth-child(6)  { animation: fadeInUp 0.35s ease both 0.30s; }
+    .card-grid > *:nth-child(7)  { animation: fadeInUp 0.35s ease both 0.35s; }
+    .card-grid > *:nth-child(8)  { animation: fadeInUp 0.35s ease both 0.40s; }
+    .card-grid > *:nth-child(9)  { animation: fadeInUp 0.35s ease both 0.45s; }
+
+    .btn-fav { transition: transform 0.2s ease, color 0.2s ease; }
+    .btn-fav:hover { transform: scale(1.2); }
+    .btn-fav.activo svg { fill: #f43f5e; stroke: #f43f5e; }
+
+    .card-oculta { display: none !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Encabezado de la sección -->
+<div class="mb-6 fade-in-up">
+    <div class="flex items-center gap-3 mb-2">
+        <a href="{% url 'home' %}" class="text-gray-400 hover:text-gray-600 text-sm transition-colors">Inicio</a>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-600 text-sm font-medium">Adopciones</span>
+    </div>
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-black text-gray-900">Mascotas en adopción 🐾</h1>
+            <p class="text-gray-500 mt-1">Encontrá tu nuevo compañero de vida.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="{% url 'mis_favoritos' %}" class="inline-flex items-center gap-2 bg-rose-50 text-rose-600 text-sm font-semibold px-4 py-2 rounded-full border border-rose-100 hover:bg-rose-100 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                Mis favoritos
+                <span id="fav-badge-header" class="hidden bg-rose-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full"></span>
+            </a>
+            <span class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 text-sm font-semibold px-4 py-2 rounded-full">
+                {{ page_obj.paginator.count }} disponible{{ page_obj.paginator.count|pluralize }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7 fade-in-up">
+    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+        <div class="text-2xl font-black text-gray-900">{{ stats.total }}</div>
+        <div class="text-xs text-gray-500 font-medium mt-0.5">Total mascotas</div>
+    </div>
+    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+        <div class="text-2xl font-black text-amber-600">{{ stats.perros }}</div>
+        <div class="text-xs text-gray-500 font-medium mt-0.5">🐶 Perros</div>
+    </div>
+    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+        <div class="text-2xl font-black text-purple-600">{{ stats.gatos }}</div>
+        <div class="text-xs text-gray-500 font-medium mt-0.5">🐱 Gatos</div>
+    </div>
+    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-center">
+        <div class="text-2xl font-black text-emerald-600">{{ stats.disponibles }}</div>
+        <div class="text-xs text-gray-500 font-medium mt-0.5">✅ Disponibles</div>
+    </div>
+</div>
+
+<!-- Filtros y buscador -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8 fade-in-up">
+    <form method="get" id="filtros-form" class="flex flex-col sm:flex-row gap-3 flex-wrap">
+
+        <!-- Buscador -->
+        <div class="relative flex-1 min-w-40">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input
+                type="text"
+                name="q"
+                id="input-nombre"
+                value="{{ busqueda }}"
+                placeholder="Buscar por nombre..."
+                autocomplete="off"
+                class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent placeholder-gray-400"
+            >
+        </div>
+
+        <!-- Filtro especie -->
+        <select
+            name="especie"
+            id="input-especie"
+            class="px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+        >
+            <option value="">Todas las especies</option>
+            {% for valor, etiqueta in especies %}
+            <option value="{{ valor }}" {% if especie_activa == valor %}selected{% endif %}>{{ etiqueta }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Filtro raza -->
+        <div class="relative min-w-36">
+            <input
+                type="text"
+                name="raza"
+                id="input-raza"
+                value="{{ raza_activa }}"
+                placeholder="Filtrar por raza..."
+                autocomplete="off"
+                class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent placeholder-gray-400"
+            >
+        </div>
+
+        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors">
+            Buscar
+        </button>
+
+        {% if busqueda or especie_activa or raza_activa %}
+        <a href="{% url 'lista_adopciones' %}" class="flex items-center gap-1 text-gray-500 hover:text-gray-700 font-medium px-4 py-2.5 rounded-xl border border-gray-200 hover:border-gray-300 text-sm transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            Limpiar
+        </a>
+        {% endif %}
+    </form>
+
+    <!-- Mensaje de filtro en tiempo real -->
+    <p id="msg-filtro-live" class="hidden mt-3 text-xs text-gray-500">
+        Mostrando resultados filtrados en esta página. Presioná <strong>Buscar</strong> para buscar en todas las páginas.
+    </p>
+</div>
+
+<!-- Grid de mascotas -->
+{% if mascotas %}
+<div id="grid-mascotas" class="card-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+    {% for mascota in mascotas %}
+    <div
+        class="adopcion-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 group relative"
+        data-id="{{ mascota.id }}"
+        data-nombre="{{ mascota.nombre|lower }}"
+        data-especie="{{ mascota.especie }}"
+        data-raza="{{ mascota.raza|lower }}"
+    >
+        <!-- Botón favorito -->
+        <button
+            class="btn-fav absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full shadow-sm border border-white/60 text-gray-400 hover:text-rose-500"
+            aria-label="Agregar a favoritos"
+            onclick="toggleFavorito(event, {{ mascota.id }})"
+            data-id="{{ mascota.id }}"
+        >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+        </button>
+
+        <a href="{{ mascota.get_absolute_url }}" class="block">
+            <!-- Foto -->
+            <div class="relative overflow-hidden h-56 bg-gray-100">
+                {% if mascota.foto_principal %}
+                <img
+                    src="{{ mascota.foto_principal.url }}"
+                    alt="{{ mascota.nombre }}"
+                    class="foto-mascota w-full h-full object-cover"
+                    loading="lazy"
+                >
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100">
+                    <span class="text-7xl">{{ mascota.icono_especie }}</span>
+                </div>
+                {% endif %}
+
+                <!-- Badge especie -->
+                <span class="badge-especie absolute top-3 left-3 bg-white/80 text-gray-700 text-xs font-bold px-3 py-1 rounded-full border border-white/60">
+                    {{ mascota.icono_especie }} {{ mascota.get_especie_display }}
+                </span>
+
+                <!-- Badge destacado -->
+                {% if mascota.destacado %}
+                <span class="absolute bottom-3 left-3 bg-amber-400 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    ⭐ Destacado
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Contenido -->
+            <div class="p-5">
+                <h3 class="text-lg font-black text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors">
+                    {{ mascota.nombre }}
+                </h3>
+
+                <div class="flex items-center gap-3 text-xs text-gray-500 mb-3 flex-wrap">
+                    <span>🗓 {{ mascota.edad }}</span>
+                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <span>{{ mascota.get_sexo_display }}</span>
+                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <span>{{ mascota.get_tamanio_display }}</span>
+                    {% if mascota.raza %}
+                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                    <span>{{ mascota.raza }}</span>
+                    {% endif %}
+                </div>
+
+                {% if mascota.ubicacion or mascota.refugio %}
+                <div class="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>{{ mascota.ubicacion|default:mascota.refugio }}</span>
+                </div>
+                {% endif %}
+
+                <p class="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-4">
+                    {{ mascota.descripcion }}
+                </p>
+
+                <!-- Estado sanitario -->
+                <div class="flex gap-2 mb-4 flex-wrap">
+                    {% if mascota.vacunado %}
+                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-1 rounded-lg">
+                        ✅ Vacunado
+                    </span>
+                    {% endif %}
+                    {% if mascota.castrado %}
+                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded-lg">
+                        ✅ Castrado
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Fecha de ingreso -->
+                <p class="text-xs text-gray-400 mb-3">
+                    Ingresó: {{ mascota.fecha_ingreso|date:"d/m/Y" }} · Publicado hace {{ mascota.fecha_publicacion|timesince }}
+                </p>
+
+                <span class="block w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors">
+                    Ver detalle →
+                </span>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Mensaje sin resultados en filtro cliente -->
+<div id="msg-sin-resultados-live" class="hidden text-center py-12">
+    <div class="text-5xl mb-3">🔍</div>
+    <p class="text-gray-600 font-medium">No hay mascotas que coincidan con tu búsqueda en esta página.</p>
+    <p class="text-gray-500 text-sm mt-1">Presioná <strong>Buscar</strong> para buscar en todas las páginas.</p>
+</div>
+
+<!-- Paginación -->
+{% if page_obj.has_other_pages %}
+<nav class="flex items-center justify-center gap-2 mt-4" aria-label="Paginación">
+    {% if page_obj.has_previous %}
+    <a href="?{% if busqueda %}q={{ busqueda }}&{% endif %}{% if especie_activa %}especie={{ especie_activa }}&{% endif %}{% if raza_activa %}raza={{ raza_activa }}&{% endif %}page={{ page_obj.previous_page_number }}"
+       class="flex items-center gap-1 px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:border-emerald-400 hover:text-emerald-600 text-sm font-medium transition-colors">
+        ← Anterior
+    </a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?{% if busqueda %}q={{ busqueda }}&{% endif %}{% if especie_activa %}especie={{ especie_activa }}&{% endif %}{% if raza_activa %}raza={{ raza_activa }}&{% endif %}page={{ num }}"
+           class="px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:border-emerald-400 hover:text-emerald-600 text-sm font-medium transition-colors">
+            {{ num }}
+        </a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?{% if busqueda %}q={{ busqueda }}&{% endif %}{% if especie_activa %}especie={{ especie_activa }}&{% endif %}{% if raza_activa %}raza={{ raza_activa }}&{% endif %}page={{ page_obj.next_page_number }}"
+       class="flex items-center gap-1 px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:border-emerald-400 hover:text-emerald-600 text-sm font-medium transition-colors">
+        Siguiente →
+    </a>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<!-- Estado vacío -->
+<div class="text-center py-20 fade-in-up">
+    <div class="text-6xl mb-4">🐾</div>
+    <h3 class="text-xl font-bold text-gray-700 mb-2">
+        {% if busqueda or especie_activa or raza_activa %}
+            No encontramos mascotas con esos filtros
+        {% else %}
+            No hay mascotas disponibles por el momento
+        {% endif %}
+    </h3>
+    <p class="text-gray-500 mb-6">
+        {% if busqueda or especie_activa or raza_activa %}
+            Probá con otros criterios de búsqueda.
+        {% else %}
+            Volvé pronto, seguimos actualizando el listado.
+        {% endif %}
+    </p>
+    {% if busqueda or especie_activa or raza_activa %}
+    <a href="{% url 'lista_adopciones' %}" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+        Ver todas las mascotas
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ============================================================
+// SISTEMA DE FAVORITOS
+// ============================================================
+const FAV_KEY = 'vet_favoritos';
+
+function getFavoritos() {
+    return JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+}
+
+function saveFavoritos(arr) {
+    localStorage.setItem(FAV_KEY, JSON.stringify(arr));
+    actualizarContadorFavoritos();
+    actualizarBadgeHeader();
+}
+
+function toggleFavorito(e, id) {
+    e.preventDefault();
+    e.stopPropagation();
+    const favs = getFavoritos();
+    const idx = favs.indexOf(id);
+    if (idx === -1) {
+        favs.push(id);
+    } else {
+        favs.splice(idx, 1);
+    }
+    saveFavoritos(favs);
+    renderBotonesFav();
+}
+
+function renderBotonesFav() {
+    const favs = getFavoritos();
+    document.querySelectorAll('.btn-fav').forEach(function(btn) {
+        const id = parseInt(btn.dataset.id);
+        if (favs.includes(id)) {
+            btn.classList.add('activo');
+            btn.setAttribute('aria-label', 'Quitar de favoritos');
+            btn.querySelector('svg').style.fill = '#f43f5e';
+            btn.querySelector('svg').style.stroke = '#f43f5e';
+        } else {
+            btn.classList.remove('activo');
+            btn.setAttribute('aria-label', 'Agregar a favoritos');
+            btn.querySelector('svg').style.fill = 'none';
+            btn.querySelector('svg').style.stroke = 'currentColor';
+        }
+    });
+}
+
+function actualizarBadgeHeader() {
+    const favs = getFavoritos();
+    const badge = document.getElementById('fav-badge-header');
+    if (!badge) return;
+    if (favs.length > 0) {
+        badge.textContent = favs.length > 9 ? '9+' : favs.length;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+
+// ============================================================
+// FILTRO EN TIEMPO REAL (dentro de la página actual)
+// ============================================================
+function filtrarLive() {
+    const nombre = document.getElementById('input-nombre').value.trim().toLowerCase();
+    const especie = document.getElementById('input-especie').value.toLowerCase();
+    const raza = document.getElementById('input-raza').value.trim().toLowerCase();
+
+    const cards = document.querySelectorAll('#grid-mascotas > [data-id]');
+    let visibles = 0;
+
+    cards.forEach(function(card) {
+        const cNombre = card.dataset.nombre || '';
+        const cEspecie = card.dataset.especie || '';
+        const cRaza = card.dataset.raza || '';
+
+        const matchNombre = !nombre || cNombre.includes(nombre);
+        const matchEspecie = !especie || cEspecie === especie;
+        const matchRaza = !raza || cRaza.includes(raza);
+
+        if (matchNombre && matchEspecie && matchRaza) {
+            card.classList.remove('card-oculta');
+            visibles++;
+        } else {
+            card.classList.add('card-oculta');
+        }
+    });
+
+    const msgLive = document.getElementById('msg-filtro-live');
+    const msgVacio = document.getElementById('msg-sin-resultados-live');
+    const hayFiltro = nombre || especie || raza;
+
+    if (msgLive) msgLive.classList.toggle('hidden', !hayFiltro);
+    if (msgVacio) msgVacio.classList.toggle('hidden', visibles > 0 || !hayFiltro);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    renderBotonesFav();
+    actualizarBadgeHeader();
+
+    const inputNombre = document.getElementById('input-nombre');
+    const inputEspecie = document.getElementById('input-especie');
+    const inputRaza = document.getElementById('input-raza');
+
+    if (inputNombre) inputNombre.addEventListener('input', filtrarLive);
+    if (inputEspecie) inputEspecie.addEventListener('change', filtrarLive);
+    if (inputRaza) inputRaza.addEventListener('input', filtrarLive);
+
+    filtrarLive();
+});
+</script>
+{% endblock %}

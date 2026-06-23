@@ -2,20 +2,36 @@
 __pycache__/
 *.py[cod]
 *.pyo
+*.pyd
+*.pyc
 
-# Entorno virtual
+# Virtual environment
 venv/
+.venv/
 env/
 
-# Variables de entorno (contiene secretos)
-.env
-
-# Base de datos local
+# Django
+*.log
+local_settings.py
 db.sqlite3
-
-# Archivos subidos por usuarios
+db.sqlite3-journal
 media/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Static collected
+staticfiles/
+static_root/

@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'apps.historial',
     'apps.turnos',
     'apps.facturacion',
+    'apps.adopciones',
 ]
 
 MIDDLEWARE = [
